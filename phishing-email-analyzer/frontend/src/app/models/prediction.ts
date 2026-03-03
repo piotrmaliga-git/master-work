@@ -7,6 +7,7 @@ export interface EmailRequest {
 export interface AnalysisResult {
   model: string;
   prediction: 'phishing' | 'legit';
+  reason: string;
   timestamp: string;
   sender: string;
 }

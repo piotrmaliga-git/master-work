@@ -1,16 +1,18 @@
 @if (result(); as res) {
-  <div class="pt-8 mt-8 border-t-2 border-gray-200">
+  <div class="pt-8 mt-8 border-t-2 border-gray-400">
     <h2 class="mb-5 text-2xl font-semibold text-gray-900">Analysis Result</h2>
-    <div class="p-5 border-l-4 rounded bg-gradient-to-r from-blue-50 to-gray-100 border-primary">
-      <div class="flex justify-between py-3 border-b border-gray-200">
+    <div
+      class="p-5 mb-8 border-l-4 rounded bg-gradient-to-r from-blue-50 to-gray-100 border-primary"
+    >
+      <div class="flex justify-between py-3 border-b border-gray-300">
         <span class="font-semibold text-gray-700">Model:</span>
         <span class="font-medium text-gray-900">{{ res.model }}</span>
       </div>
-      <div class="flex justify-between py-3 border-b border-gray-200">
+      <div class="flex justify-between py-3 border-b border-gray-300">
         <span class="font-semibold text-gray-700">Sender:</span>
         <span class="font-medium text-gray-900">{{ res.sender }}</span>
       </div>
-      <div class="flex justify-between py-3 border-b border-gray-200">
+      <div class="flex justify-between py-3 border-b border-gray-300">
         <span class="font-semibold text-gray-700">Prediction:</span>
         <span
           class="px-2 py-1 font-bold rounded"
@@ -20,6 +22,12 @@
         >
           {{ res.prediction | uppercase }}
         </span>
+      </div>
+      <div class="flex justify-between py-3 border-b border-gray-300 gap-4">
+        <span class="font-semibold text-gray-700">Reason:</span>
+        <span class="font-medium text-gray-900 text-right">{{
+          res.reason || 'Brak dodatkowego uzasadnienia.'
+        }}</span>
       </div>
       <div class="flex justify-between py-3">
         <span class="font-semibold text-gray-700">Timestamp:</span>
