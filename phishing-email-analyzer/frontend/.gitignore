@@ -1,0 +1,7 @@
+# Dependencies
+node_modules/
+
+# Angular build/cache artifacts
+dist/
+.angular/
+coverage/
