@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:coverage": "ng test --watch=false --coverage",
     "serve:ssr:app": "node dist/app/server/server.mjs",
     "format": "prettier --write \"src/**/*.{ts,html,css,json}\" \".prettierrc\" \"angular.json\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\" \".prettierrc\" \"angular.json\""
@@ -32,6 +33,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.27",
     "jsdom": "^28.0.0",
     "postcss": "^8.5.6",
