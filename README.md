@@ -31,7 +31,6 @@ Minimalnie:
 - `OPENAI_API_KEY` (jeśli używasz modeli GPT)
 - `GOOGLE_API_KEY` (jeśli używasz modeli Gemini)
 - `HF_TOKEN` (dla modeli Hugging Face)
-- `ROBERTA_MODEL_ID=FacebookAI/roberta-large-mnli`
 - `LLAMA_API_KEY` (jeśli używasz Llama Cloud)
 
 ### 3) Uruchomienie API
