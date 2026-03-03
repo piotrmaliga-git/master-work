@@ -5,3 +5,6 @@ node_modules/
 dist/
 .angular/
 coverage/
+
+# IDE and editor settings
+.vscode/
