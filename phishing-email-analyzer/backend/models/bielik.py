@@ -179,3 +179,7 @@ def classify_with_bielik_alias(email_text: str, model_alias: str) -> str:
 
 def classify_with_bielik(email_text: str) -> str:
 	return classify_with_bielik_alias(email_text, "bielik-4bit")
+
+
+def classify_with_bielik2(email_text: str) -> str:
+	return classify_with_bielik_alias(email_text, "bielik2-4bit")

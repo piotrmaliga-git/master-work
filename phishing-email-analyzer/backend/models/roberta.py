@@ -5,7 +5,7 @@ import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
-ROBERTA_DEFAULT_MODEL_ID = "FacebookAI/roberta-large-mnli"
+ROBERTA_MODEL_ID = "FacebookAI/roberta-large-mnli"
 _PHISHING_HYPOTHESIS = "This email is phishing."
 _LEGIT_HYPOTHESIS = "This email is legitimate."
 
@@ -14,10 +14,6 @@ _cached_tokenizer: AutoTokenizer | None = None
 _cached_model: AutoModelForSequenceClassification | None = None
 _cached_device: torch.device | None = None
 _cached_entailment_index: int | None = None
-
-
-def _resolve_model_id() -> str:
-    return os.getenv("ROBERTA_MODEL_ID", "").strip() or ROBERTA_DEFAULT_MODEL_ID
 
 
 def _resolve_entailment_index(model: AutoModelForSequenceClassification) -> int:
@@ -46,11 +42,10 @@ def _load_model() -> tuple[AutoTokenizer, AutoModelForSequenceClassification, to
         ):
             return _cached_tokenizer, _cached_model, _cached_device, _cached_entailment_index
 
-        model_id = _resolve_model_id()
         hf_token = os.getenv("HF_TOKEN", "").strip() or None
 
-        tokenizer = AutoTokenizer.from_pretrained(model_id, token=hf_token)
-        model = AutoModelForSequenceClassification.from_pretrained(model_id, token=hf_token)
+        tokenizer = AutoTokenizer.from_pretrained(ROBERTA_MODEL_ID, token=hf_token)
+        model = AutoModelForSequenceClassification.from_pretrained(ROBERTA_MODEL_ID, token=hf_token)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model.to(device)

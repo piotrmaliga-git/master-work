@@ -12,8 +12,7 @@ from google import genai
 from openai import OpenAI
 from pydantic import BaseModel
 
-from models.bielik import classify_with_bielik
-from models.bielik2 import classify_with_bielik2
+from models.bielik import classify_with_bielik, classify_with_bielik2
 from models.llama import classify_with_llama
 from models.roberta import classify_with_roberta
 
@@ -34,8 +33,11 @@ app.add_middleware(
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 gemini_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-REPO_ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-REPORTS_DIR = os.path.join(REPO_ROOT_DIR, "reports")
+BACKEND_DIR = os.path.dirname(__file__)
+PROJECT_ROOT_DIR = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
+WORKSPACE_ROOT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, ".."))
+REPORTS_DIR = os.path.join(WORKSPACE_ROOT_DIR, "reports")
+DATASET_PATH = os.path.join(WORKSPACE_ROOT_DIR, "data", "data.json")
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 # System prompt for phishing classification
@@ -192,15 +194,14 @@ async def analyze_batch(batch_request: dict):
         "gemini-2.5-pro"
     ]
 
-    # load dataset from centralized data folder
-    dataset_path = os.path.join(os.path.dirname(__file__), "..", "data", "data.json")
-    with open(dataset_path, "r", encoding="utf-8") as f:
+    # load dataset from workspace-root data folder
+    with open(DATASET_PATH, "r", encoding="utf-8") as f:
         dataset = json.load(f)
 
-    all_results = {
+    batch_report = {
         "timestamp": datetime.utcnow().isoformat(),
         "models": models,
-        "results": []
+        "items": []
     }
 
     for idx, email in enumerate(dataset):
@@ -221,7 +222,7 @@ async def analyze_batch(batch_request: dict):
 
             email_result["predictions"][model] = prediction
 
-        all_results["results"].append(email_result)
+        batch_report["items"].append(email_result)
 
         # Print progress
         if (idx + 1) % 50 == 0:
@@ -230,7 +231,7 @@ async def analyze_batch(batch_request: dict):
     # Save results
     filename = os.path.join(REPORTS_DIR, f"batch_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json")
     with open(filename, "w", encoding="utf-8") as f:
-        json.dump(all_results, f, indent=2, ensure_ascii=False)
+        json.dump(batch_report, f, indent=2, ensure_ascii=False)
 
     return {
         "message": "Batch analysis completed",

@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Angular build/cache artifacts
+dist/
+.angular/
+coverage/
+playwright-report/
+test-results/
+
+# IDE and editor settings
+.vscode/

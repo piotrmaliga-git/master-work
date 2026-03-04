@@ -31,7 +31,6 @@ Minimalnie:
 - `OPENAI_API_KEY` (jeśli używasz modeli GPT)
 - `GOOGLE_API_KEY` (jeśli używasz modeli Gemini)
 - `HF_TOKEN` (dla modeli Hugging Face)
-- `ROBERTA_MODEL_ID=FacebookAI/roberta-large-mnli`
 - `LLAMA_API_KEY` (jeśli używasz Llama Cloud)
 
 ### 3) Uruchomienie API
@@ -60,6 +59,20 @@ npm start
 ```
 
 Aplikacja komunikuje się z backendem pod `http://localhost:8000`.
+
+### 3) Testy E2E (Playwright)
+
+```powershell
+cd "phishing-email-analyzer/frontend"
+npx playwright install
+npm run e2e
+```
+
+Przydatne komendy:
+
+- `npm run e2e:ui` – interaktywny runner Playwright
+- `npm run e2e:headed` – uruchomienie testów w widocznej przeglądarce
+- `npm run e2e:report` – podgląd raportu HTML
 
 ## Dostępne modele (API `model_name`)
 
