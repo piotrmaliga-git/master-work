@@ -8,13 +8,15 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from google import genai
-from openai import OpenAI
 from pydantic import BaseModel
 
-from models.bielik import classify_with_bielik, classify_with_bielik2
-from models.llama import classify_with_llama
-from models.roberta import classify_with_roberta
+from models.bielik_4bit import classify_with_bielik
+from models.bielik2_4bit import classify_with_bielik2
+from models.gemini import classify_with_gemini
+from models.gpt_4_1 import classify_with_gpt4_1
+from models.llama_cloud import classify_with_llama
+from models.mistral_7b import classify_with_mistral_7b
+from models.roberta_large_mnli import classify_with_roberta
 
 load_dotenv()
 
@@ -29,10 +31,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize clients
-openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-gemini_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-
 BACKEND_DIR = os.path.dirname(__file__)
 PROJECT_ROOT_DIR = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
 WORKSPACE_ROOT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, ".."))
@@ -40,41 +38,10 @@ REPORTS_DIR = os.path.join(WORKSPACE_ROOT_DIR, "reports")
 DATASET_PATH = os.path.join(WORKSPACE_ROOT_DIR, "data", "data.json")
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
-# System prompt for phishing classification
-SYSTEM_PROMPT = "You are a phishing classifier. Analyze the email text and respond with ONLY 'phishing' or 'legit', nothing else."
-
 class EmailRequest(BaseModel):
     email_text: str
     model_name: str = "gpt-3.5-turbo"
     sender: Optional[str] = None
-
-
-def classify_with_openai(email_text: str, model: str) -> str:
-    """Classify email using OpenAI models."""
-    try:
-        response = openai_client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": email_text}
-            ],
-            temperature=0
-        )
-        return response.choices[0].message.content.strip().lower()
-    except Exception as e:
-        return f"error: {str(e)}"
-
-
-def classify_with_gemini(email_text: str, model: str) -> str:
-    """Classify email using Google Gemini models."""
-    try:
-        response = gemini_client.models.generate_content(
-            model=model,
-            contents=f"{SYSTEM_PROMPT}\n\nEmail:\n{email_text}"
-        )
-        return response.text.strip().lower()
-    except Exception as e:
-        return f"error: {str(e)}"
 
 
 def build_decision_reason(email_text: str, prediction: str) -> str:
@@ -138,11 +105,10 @@ async def root():
     return {
         "message": "Phishing Detection API",
         "available_models": [
-            "gpt-3.5-turbo",
             "gpt-4.1",
-            "gemini-2.0-flash",
             "gemini-2.5-pro",
             "llama-cloud",
+            "mistral-7b",
             "bielik-4bit",
             "bielik2-4bit",
             "roberta-baseline"
@@ -155,8 +121,10 @@ async def analyze_email(request: EmailRequest):
     """Analyze a single email."""
     model = request.model_name
 
-    if model.startswith("gpt"):
-        result = classify_with_openai(request.email_text, model)
+    if model == "gpt-4.1":
+        result = classify_with_gpt4_1(request.email_text)
+    elif model == "mistral-7b":
+        result = classify_with_mistral_7b(request.email_text)
     elif model.startswith("gemini"):
         result = classify_with_gemini(request.email_text, model)
     elif model.startswith("llama"):
@@ -186,12 +154,15 @@ async def analyze_email(request: EmailRequest):
 
 @app.post("/analyze-batch")
 async def analyze_batch(batch_request: dict):
-    """Analyze multiple emails with all 4 models."""
+    """Analyze multiple emails with all available models."""
     models = [
-        "gpt-3.5-turbo",
         "gpt-4.1",
-        "gemini-2.0-flash",
-        "gemini-2.5-pro"
+        "gemini-2.5-pro",
+        "llama-cloud",
+        "mistral-7b",
+        "bielik-4bit",
+        "bielik2-4bit",
+        "roberta-baseline"
     ]
 
     # load dataset from workspace-root data folder
@@ -215,10 +186,25 @@ async def analyze_batch(batch_request: dict):
         }
 
         for model in models:
-            if model.startswith("gpt"):
-                prediction = classify_with_openai(email["text"], model)
-            else:
-                prediction = classify_with_gemini(email["text"], model)
+            try:
+                if model == "gpt-4.1":
+                    prediction = classify_with_gpt4_1(email["text"])
+                elif model == "mistral-7b":
+                    prediction = classify_with_mistral_7b(email["text"])
+                elif model.startswith("gemini"):
+                    prediction = classify_with_gemini(email["text"], model)
+                elif model.startswith("llama"):
+                    prediction = await classify_with_llama(email["text"])
+                elif model.startswith("bielik2"):
+                    prediction = classify_with_bielik2(email["text"])
+                elif model.startswith("bielik"):
+                    prediction = classify_with_bielik(email["text"])
+                elif model.startswith("roberta"):
+                    prediction = classify_with_roberta(email["text"])
+                else:
+                    prediction = "error: Unknown model"
+            except Exception as e:
+                prediction = f"error: {str(e)}"
 
             email_result["predictions"][model] = prediction
 
