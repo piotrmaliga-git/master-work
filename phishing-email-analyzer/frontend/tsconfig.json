@@ -19,7 +19,8 @@
       "@components/*": ["components/*"],
       "@services/*": ["services/*"],
       "@models/*": ["models/*"]
-    }
+    },
+    "types": ["node", "@playwright/test"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
