@@ -1,0 +1,42 @@
+name: PR Frontend CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  frontend-checks:
+    name: Frontend checks (build -> lint/format -> unit -> e2e)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: phishing-email-analyzer/frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: phishing-email-analyzer/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint & format
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:ci
+
+      - name: E2E tests
+        run: npm run e2e
