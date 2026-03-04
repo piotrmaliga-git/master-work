@@ -20,20 +20,18 @@ export class AnalyzerComponent {
 
   emailText = signal<string>('');
   sender = signal<string>('');
-  selectedModel = signal<string>('gpt-3.5-turbo');
+  selectedModel = signal<string>('gpt-4.1');
   internalError = signal<string>('');
 
   models = [
-    { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (Old)' },
-    { id: 'gpt-4.1', name: 'GPT-4.1 (New)' },
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Old)' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (New)' },
+    { id: 'gpt-4.1', name: 'GPT-4.1' },
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
     { id: 'llama-cloud', name: 'Llama Cloud' },
-    { id: 'roberta-baseline', name: 'RoBERTa (Baseline MNLI)' },
+    { id: 'mistral-7b', name: 'Mistral 7B' },
     { id: 'bielik-4bit', name: 'Bielik (4-bit)' },
     { id: 'bielik2-4bit', name: 'Bielik 2 (4-bit)' },
+    { id: 'roberta-baseline', name: 'RoBERTa (Baseline MNLI)' },
   ];
-
   onAnalyze() {
     if (!this.emailText().trim()) {
       this.internalError.set('Please enter email text');
