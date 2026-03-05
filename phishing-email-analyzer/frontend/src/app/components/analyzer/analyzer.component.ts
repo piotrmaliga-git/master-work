@@ -16,10 +16,12 @@ export class AnalyzerComponent {
     emailText: string;
     selectedModel: string;
     sender: string;
+    title: string;
   }>();
 
   emailText = signal<string>('');
   sender = signal<string>('');
+  title = signal<string>('');
   selectedModel = signal<string>('gpt-4.1');
   internalError = signal<string>('');
 
@@ -41,12 +43,14 @@ export class AnalyzerComponent {
       emailText: this.emailText(),
       selectedModel: this.selectedModel(),
       sender: this.sender().trim(),
+      title: this.title().trim(),
     });
   }
 
   clear() {
     this.emailText.set('');
     this.sender.set('');
+    this.title.set('');
     this.internalError.set('');
   }
 }

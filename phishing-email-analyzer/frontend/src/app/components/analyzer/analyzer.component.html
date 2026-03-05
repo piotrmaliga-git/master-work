@@ -30,6 +30,20 @@
       class="w-full px-3 py-2 text-sm transition-all duration-300 border-2 border-gray-300 rounded focus:outline-none focus:border-primary focus:ring-4 focus:ring-blue-100 disabled:bg-gray-100 disabled:cursor-not-allowed"
     />
   </div>
+
+  <div class="mb-6">
+    <label for="title-input" class="block mb-2 text-sm font-semibold text-gray-700"
+      >Email Title/Subject:</label
+    >
+    <input
+      id="title-input"
+      type="text"
+      [(ngModel)]="title"
+      [disabled]="loading()"
+      placeholder="e.g. Urgent: Verify Your Account"
+      class="w-full px-3 py-2 text-sm transition-all duration-300 border-2 border-gray-300 rounded focus:outline-none focus:border-primary focus:ring-4 focus:ring-blue-100 disabled:bg-gray-100 disabled:cursor-not-allowed"
+    />
+  </div>
   <div class="mb-6">
     <textarea
       id="email-input"
