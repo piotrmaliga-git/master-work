@@ -43,10 +43,18 @@ export class HomePageComponent {
 
   constructor(private api: ApiService) {}
 
-  async onAnalyzeRequest(payload: { emailText: string; selectedModel: string; sender?: string }) {
+  async onAnalyzeRequest(payload: {
+    emailText: string;
+    selectedModel: string;
+    sender: string;
+    title: string;
+  }) {
     this.loading.set(true);
     this.error.set('');
     this.result.set(null);
+
+    // Start timing
+    const startTime = performance.now();
 
     try {
       const response = await this.api
@@ -54,8 +62,19 @@ export class HomePageComponent {
           email_text: payload.emailText,
           model_name: payload.selectedModel,
           sender: payload.sender,
+          title: payload.title,
         })
         .toPromise();
+
+      // Calculate frontend response time
+      const endTime = performance.now();
+      const frontendTimeMs = Math.round((endTime - startTime) * 100) / 100;
+
+      // Add frontend time to response
+      if (response) {
+        response.frontend_time_ms = frontendTimeMs;
+      }
+
       this.result.set(response ?? null);
     } catch (error: any) {
       this.error.set(
