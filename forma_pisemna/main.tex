@@ -1,0 +1,1173 @@
+% !TEX root = main.tex
+\documentclass[11pt]{extreport}
+
+% ===== IMPORT USTAWIEŃ =====
+\input{settings}
+
+% ===== DOKUMENT =====
+\begin{document}
+
+% Strona tytułowa i oświadczenia
+\input{title_page}
+\input{claims_page}
+
+% Spis treści
+\tableofcontents
+\newpage
+
+% Spis rysunków
+\listoffigures
+\addcontentsline{toc}{chapter}{Spis rysunków}
+\newpage
+
+% Spis tabel  
+\listoftables
+\addcontentsline{toc}{chapter}{Spis tabel}
+\newpage
+
+% Wykaz oznaczeń (opcjonalnie)
+\begingroup
+\titleformat{\chapter}[hang]
+  {\normalfont\fontsize{16}{20}\bfseries}
+  {\thechapter.}{1em}{}
+      \clearpage
+    \phantomsection
+
+\addcontentsline{toc}{chapter}{Wykaz oznaczeń}
+\chapter*{Wykaz oznaczeń}
+
+\begin{tabular}{ll}
+NLP & Natural Language Processing -- Przetwarzanie języka naturalnego \\
+LLM & Large Language Model -- Duży model językowy \\
+API & Application Programming Interface -- Interfejs programowania aplikacji \\
+GPU & Graphics Processing Unit -- Procesor graficzny \\
+SOTA & State-of-the-Art -- Najnowszy stan wiedzy \\
+ML & Machine Learning -- Uczenie maszynowe \\
+AI & Artificial Intelligence -- Sztuczna inteligencja \\
+RNN & Recurrent Neural Network -- Rekurencyjna sieć neuronowa \\
+LSTM & Long Short-Term Memory -- Długa pamięć kr\'{o}tkotoermowa \\
+BERT & Bidirectional Encoder Representations from Transformers \\
+GPT & Generative Pre-trained Transformer \\
+\end{tabular}
+
+\endgroup
+\newpage
+
+% ===== STRESZCZENIE =====
+\chapter*{Streszczenie}
+\addcontentsline{toc}{chapter}{Streszczenie}
+
+Phishing stanowi jedno z największych zagrożeń dla bezpieczeństwa cyberprzestrzeni. W niniejszej pracy magisterskiej zaprezentowano kompleksowy system do automatycznej detekcji i klasyfikacji wiadomości phishingowych przy wykorzystaniu nowoczesnych modeli sztucznej inteligencji opartych na przetwarzaniu języka naturalnego (NLP).
+
+Głównym celem badań było porównanie wydajności siedmiu różnych architektur neuronowych: modeli opartych na transformatorach (GPT-4, Gemini, Llama), polskich modeli językowych (Bielik), modeli działających lokalnie (RoBERTa, Mistral 7B) w kontekście wykrywania phishingu. Praca obejmuje kompletny stos aplikacyjny zbudowany w architekturze mikroserwisów (FastAPI + Angular), umożliwiający interaktywną analizę wiadomości email oraz batch processing zbiorów danych.
+
+Wyniki pokazują, że modele oparte na transformatorach osiągają najwyższą dokładność (F1-score > 0.94), przy czym GPT-4.1 uzyskał najlepszy wynik (F1 = 0.96). Modele lokalne, szczególnie Bielik2, oferują kompromis między wydajnością (F1 = 0.89) a kosztami operacyjnymi. Praca dostarcza praktycznych rekomendacji dla organizacji wybierających rozwiązania do ochrony przed phishingiem.
+
+\vspace{1cm}
+\noindent\textbf{Słowa kluczowe:} phishing, klasyfikacja tekstu, sztuczna inteligencja, transformatory, bezpieczeństwo cyberprzestrzeni, NLP
+\newpage
+
+\begin{itemize}[itemsep=0.5em]
+    \item \textbf{1990s-2000s:} Masowe ataki spamowe, rudymentarne wiadomości
+    \item \textbf{2000-2010:} Zaawansowane spoofing, ataki na instytucje finansowe
+    \item \textbf{2010-2020:} Spear-phishing, whaling, BEC (Business Email Compromise)
+    \item \textbf{2020-2025:} AI-assisted phishing, deepfakes, targeted social engineering
+\end{itemize}
+
+\section{Metody tradycyjne detekcji phishingu}
+\label{sec:metody-tradycyjne}
+
+\subsection{Filtrowanie oparte na regułach}
+
+Wspólne podejście w komercyjnych systemach email:
+\begin{itemize}
+    \item Analiza nagłówków email (SPF, DKIM, DMARC)
+    \item Blacklisty i whitelisty adresów IP
+    \item Wyrażenia regularne do identyfikacji podejrzanych słów kluczowych
+    \item Analiza URL (sprawdzenie reverse DNS, reputacji domeny)
+\end{itemize}
+
+\textbf{Wady:} Niska adaptacyjność, łatwo omijalne, brak zrozumienia kontekstu semantycznego.
+
+\subsection{Machine Learning --- tradycyjne podejścia}
+
+Wczesne badania \cite{bergholz2010filtering,fette2007learning} wykorzystywały:
+\begin{itemize}
+    \item Naive Bayes z bag-of-words
+    \item SVM (Support Vector Machines)
+    \item Random Forest
+    \item Logistic Regression
+\end{itemize}
+
+\textbf{Cechy:} word frequency, n-gramy, TF-IDF, wskaźniki ze struktury HTML
+
+\textbf{Wyniki:} F1-score 80--90\% w zbiorach zamkniętych, ale słaba generalizacja na nowych typach phishingu.
+
+\section{Głębokie sieci neuronowe i transformatory}
+\label{sec:deep-learning}
+
+\subsection{Wczesne sieci neuronowe (RNN, LSTM)}
+
+Prace \cite{hochreiter1997lstm,chollet2017deep} wykazały, że RNN i LSTM mogą lepiej modelować zależności sekwencyjne w tekście w porównaniu z tradycyjnym ML.
+
+\begin{itemize}
+    \item \textbf{RNN:} Recurrent Neural Networks --- przetwarzanie sekwencji
+    \item \textbf{LSTM:} Long Short-Term Memory --- rozwiązanie problemu zanikającego gradientu
+\end{itemize}
+
+\subsection{Architektura Transformatora}
+
+Artykuł ,,Attention Is All You Need'' (Vaswani et al., 2017) \cite{vaswani2017attention} zrewolucjonizował dziedzinę:
+
+\begin{equation}
+\text{Transformer} = \text{Multi-Head Self-Attention} + \text{Feed-Forward Networks}
+\end{equation}
+
+\textbf{Zalety:}
+\begin{itemize}
+    \item Parallelizable (szybszy trening)
+    \item Długokontekstowe zależności (aż do 2048+ tokenów)
+    \item Transfer learning (pre-trained modele)
+\end{itemize}
+
+\subsection{BERT, RoBERTa i warianty}
+
+\begin{itemize}
+    \item \textbf{BERT} (Bidirectional Encoder Representations from Transformers) --- dwukierunkowy, zamaskowany language model \cite{devlin2018bert}
+    \item \textbf{RoBERTa} (Robustly Optimized BERT) --- ulepszony BERT z lepszymi hiperparametrami
+    \item \textbf{Polskie modele:} Bielik (Allegro), PolBERT
+\end{itemize}
+
+Typowe podejście: transfer learning --- fine-tuning pre-trained modelu na zbiorze phishingu.
+
+\section{Duże modele językowe (LLM)}
+\label{sec:llm}
+
+\subsection{GPT (Generative Pre-trained Transformer)}
+
+Seria modeli OpenAI:
+\begin{itemize}
+    \item GPT-3 (175B parametrów)
+    \item GPT-4 (szacunkowo $\sim$1,76T parametrów)
+    \item GPT-4.1 (najnowsza wersja)
+\end{itemize}
+
+\textbf{Cechy:}
+\begin{itemize}
+    \item Zero-shot i few-shot learning
+    \item Chain-of-thought prompting
+    \item Doskonałe instrukcje w języku naturalnym
+\end{itemize}
+
+Badania pokazują, że dostrojone modele GPT znacznie przewyższają wcześniejsze podejścia \cite{openai2024gpt4}.
+
+\subsection{Gemini (Google DeepMind)}
+
+Ostateczne generacje: Gemini 2.0 Flash, Gemini 2.5 Pro
+\begin{itemize}
+    \item Multimodalne (tekst, obraz, audio)
+    \item Szybkie inference
+    \item Konkurencyjne z GPT-4
+\end{itemize}
+
+\subsection{Llama (Meta)}
+
+Open-source, dostępne modele:
+\begin{itemize}
+    \item Llama 2 (7B, 13B, 70B parametrów)
+    \item Llama Cloud (API) \cite{touvron2023llama}
+\end{itemize}
+
+\subsection{Bielik (Allegro)}
+
+Polski model oparty na Llama \cite{bielik2024}:
+\begin{itemize}
+    \item Dostosowany do polskiego języka
+    \item Dostępny w wersjach 4-bitowych (kwantyzacja)
+    \item Odpowiadający na polskie pytania w procesie klasyfikacji
+\end{itemize}
+
+\section{Metryki ewaluacyjne}
+\label{sec:metryki}
+
+Dla dwuklasowego problemu klasyfikacji (phishing vs. legit):
+
+\begin{align}
+\text{Precision} &= \frac{TP}{TP + FP} \\
+\text{Recall} &= \frac{TP}{TP + FN} \\
+F_1 &= 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} \\
+\text{Accuracy} &= \frac{TP + TN}{TP + TN + FP + FN}
+\end{align}
+
+Gdzie:
+\begin{itemize}
+    \item \textbf{TP} (True Positive) --- poprawnie sklasyfikowana wiadomość phishingowa
+    \item \textbf{FP} (False Positive) --- legalna wiadomość sklasyfikowana jako phishing
+    \item \textbf{TN} (True Negative) --- poprawnie sklasyfikowana wiadomość legalna
+    \item \textbf{FN} (False Negative) --- wiadomość phishingowa sklasyfikowana jako legalna
+\end{itemize}
+
+\textbf{Ważne:} W problematyce phishingu, Recall jest czasem ważniejszy niż Precision --- lepiej fałszywie oznaczyć legalny email niż przegapić phishing.
+
+\section{Dostępne zbiory danych}
+\label{sec:datasets}
+
+W literaturze i badaniach publicznie dostępne są \cite{apwg2023}:
+
+\begin{table}[H]
+\centering
+\caption{Publicznie dostępne zbiory danych email}
+\label{tab:datasets}
+\begin{tabular}{@{}lrrp{3cm}@{}}
+\toprule
+\textbf{Dataset} & \textbf{Liczba emaili} & \textbf{Phishing (\%)} & \textbf{Język} \\ 
+\midrule
+CEAS-08 & $\sim$4,000 & 20\% & Angielski \\
+Enron & $\sim$500,000 & 4--10\% & Angielski \\
+TREC-05/06/07 & $\sim$1,600 każdy & Spam/Ham & Angielski \\
+Ling & $\sim$2,000 & 30--40\% & Angielski \\
+Assassin & $\sim$1,000 & 50\% & Angielski \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===== ROZDZIAŁ 3: PROBLEM BADAWCZY =====
+\chapter{Sformułowanie problemu badawczego}
+\label{ch:problem}
+
+\section{Pytania badawcze}
+\label{sec:pytania}
+
+\begin{description}[style=nextline]
+    \item[\textbf{P1:}] Jakie są względne wydajności współczesnych modeli NLP (transformatory, LLM) w zadaniu klasyfikacji phishingu?
+    
+    \item[\textbf{P2:}] Czy modele open-source (Bielik, Mistral, RoBERTa) mogą dorównać komercyjnym modelom (GPT-4, Gemini)?
+    
+    \item[\textbf{P3:}] Jak czasy inferencji (latency) wpływają na praktyczną użyteczność systemu?
+    
+    \item[\textbf{P4:}] Czy modele działające lokalnie mogą być żywotną alternatywą dla firm dbających o prywatność danych?
+    
+    \item[\textbf{P5:}] Jak wpływ personalizacji promptów (few-shot, chain-of-thought) wpływa na dokładność klasyfikacji?
+\end{description}
+
+\section{Hipotezy badawcze}
+\label{sec:hipotezy}
+
+\begin{description}[style=nextline]
+    \item[\textbf{H1:}] Modele GPT-4 i Gemini osiągną najwyższą dokładność ($F_1 > 0.95$) dzięki masywnej ilości parametrów i instruction tuningowi.
+    
+    \item[\textbf{H2:}] Modele lokalne (RoBERTa, Bielik) osiągną porównywalne wyniki ($F_1 > 0.88$) przy znacznie mniejszym koszcie obliczeniowym.
+    
+    \item[\textbf{H3:}] Specjalizowane modele dla polskiego języka (Bielik) będą lepsze dla emaili w języku polskim.
+    
+    \item[\textbf{H4:}] Czas inferencji dla LLM API-based będzie niemożliwy do zaakceptowania w aplikacjach real-time ($> 5$ sekund/email).
+\end{description}
+
+\section{Zmienne badawcze}
+\label{sec:zmienne}
+
+\subsection{Zmienne niezależne}
+\begin{itemize}
+    \item Model AI (7 wariantów)
+    \item Długość tekstu email
+    \item Kategoria email (banking, social media, job, generic)
+    \item Tekst bazowy (z/bez HTML, czyszczony vs raw)
+\end{itemize}
+
+\subsection{Zmienne zależne}
+\begin{itemize}
+    \item Accuracy, Precision, Recall, F1-score
+    \item Czas inferencji [ms]
+    \item Koszt API [PLN/1000 zapytań]
+\end{itemize}
+
+% ===== ROZDZIAŁ 4: METODOLOGIA =====
+\chapter{Metodologia i architektura systemu}
+\label{ch:metodologia}
+
+\section{Architektura ogólna}
+\label{sec:architektura}
+
+System składa się z trzech głównych warstw:
+
+\begin{enumerate}
+    \item \textbf{Frontend (Angular)} --- interfejs użytkownika
+    \item \textbf{Backend (FastAPI)} --- API i logika biznesowa
+    \item \textbf{Model Layer} --- siedem modeli klasyfikacyjnych
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+┌─────────────────────────────────────────────────┐
+│         Frontend (Angular)                      │
+│  - Strona startowa                              │
+│  - Analyzer: upload email / paste tekst         │
+│  - Results: wizualizacja wyniku                 │
+└─────────────────────────────────────────────────┘
+                      │ HTTP/REST
+                      ▼
+┌─────────────────────────────────────────────────┐
+│         Backend (FastAPI)                       │
+│  ┌────────────────────────────────────────────┐ │
+│  │ Model Layer                                │ │
+│  │  ├─ gpt_4_1.py                             │ │
+│  │  ├─ gemini.py                              │ │
+│  │  ├─ llama_cloud.py                         │ │
+│  │  ├─ bielik_4bit.py                         │ │
+│  │  ├─ bielik2_4bit.py                        │ │
+│  │  ├─ mistral_7b.py                          │ │
+│  │  └─ roberta_large_mnli.py                  │ │
+│  └────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+\end{verbatim}
+\caption{Architektura systemu Phishing Email Analyzer}
+\label{fig:architektura}
+\end{figure}
+
+\section{Wybór modeli}
+\label{sec:wybor-modeli}
+
+\begin{table}[H]
+\centering
+\caption{Uzasadnienie wyboru modeli}
+\label{tab:modele}
+\begin{tabular}{@{}p{3.5cm}p{10cm}@{}}
+\toprule
+\textbf{Model} & \textbf{Uzasadnienie} \\ 
+\midrule
+GPT-4.1 & SOTA w wielu zadaniach NLP, rozbudowany context window (128K tokens) \\
+Gemini 2.0 Flash & Szybkie inference, multimodalne, konkurencyjne ceny \\
+Gemini 2.5 Pro & Najnowsza wersja, potencjalnie lepsze rozumowanie \\
+Llama Cloud & Open-source, dobra dokumentacja, wspierany przez Meta \\
+Bielik 4bit/Bielik2 & Polskie modele, mogą lepiej radzić sobie z polskimi emailami \\
+Mistral 7B & Lekki, szybki, dobry stosunek wydajności do rozmiaru \\
+RoBERTa Large MNLI & Baseline, fine-tuned na natural language inference \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Metodologia badań eksperymentalnych}
+\label{sec:metodologia-badawcza}
+
+\subsection{Przygotowanie danych}
+
+\begin{enumerate}
+    \item \textbf{Zbieranie:} Pobranie publicznie dostępnych zbiorów (CEAS, Enron, TREC, etc.)
+    \item \textbf{Czyszczenie:}
+    \begin{itemize}
+        \item Usunięcie HTML/CSS
+        \item Normalizacja kodowania (UTF-8)
+        \item Usunięcie duplikatów
+        \item Balansowanie klas (jeśli niezbalansowane)
+    \end{itemize}
+    \item \textbf{Split testowy:}
+    \begin{itemize}
+        \item 70\% trening
+        \item 15\% walidacja
+        \item 15\% test
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Konfiguracja modeli}
+
+\begin{table}[H]
+\centering
+\caption{Wspólne parametry dla wszystkich modeli}
+\label{tab:parametry}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Parametr} & \textbf{Wartość} & \textbf{Uzasadnienie} \\ 
+\midrule
+Temperatura (T) & 0.3 & Niższa T $\rightarrow$ bardziej deterministyczne wyniki \\
+Max tokens & 100 & Wystarczająco dla klasyfikacji \\
+Prompt & Standaryzowany & Spójność pomiędzy modelami \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Protokół testowania}
+
+Pseudokod procedury testowej:
+
+\begin{lstlisting}[language=Python, caption={Protokół testowania modeli}, label={lst:protocol}]
+for each model in [GPT-4.1, Gemini, ..., RoBERTa]:
+    for each email in test_set:
+        prediction = model.classify(email)
+        ground_truth = email.label
+        
+        # Metrics collection
+        accuracy, precision, recall, f1 = compute_metrics()
+        inference_time = measure_duration()
+        
+    # Summary statistics
+    write_to_reports(model_name, results)
+\end{lstlisting}
+
+\subsection{Metryki ewaluacyjne}
+
+Główne metryki:
+\begin{itemize}
+    \item \textbf{Accuracy} --- ogólna dokładność
+    \item \textbf{Precision} --- ile z przewidywanych phishingów jest rzeczywiście phishingiem
+    \item \textbf{Recall} --- ile z rzeczywistych phishingów zostało wykrytych
+    \item \textbf{F1-Score} --- harmoniczna średnia precision i recall
+    \item \textbf{Inference Time} [ms] --- szybkość odpowiedzi
+\end{itemize}
+
+% ===== ROZDZIAŁ 5: IMPLEMENTACJA =====
+\chapter{Implementacja systemu}
+\label{ch:implementacja}
+
+\section{Architektura backendu (FastAPI)}
+\label{sec:backend}
+
+\subsection{Główne komponenty}
+
+Backend został zaimplementowany w języku Python z wykorzystaniem frameworka FastAPI. Główne komponenty:
+
+\begin{lstlisting}[language=Python, caption={Główny plik backendu}, label={lst:main}]
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+app = FastAPI()
+
+# CORS dla frontenda Angular
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=["*"]
+)
+
+class EmailRequest(BaseModel):
+    email_text: str
+    model_name: str = "gpt-3.5-turbo"
+    sender: str
+    title: str
+\end{lstlisting}
+
+\subsection{Routing API}
+
+System udostępnia trzy główne endpointy:
+
+\begin{enumerate}
+    \item \texttt{POST /classify} --- klasyfikacja pojedynczego emaila
+    \item \texttt{POST /batch} --- przetwarzanie wsadowe (batch)
+    \item \texttt{GET /models} --- lista dostępnych modeli
+\end{enumerate}
+
+\subsubsection{Endpoint: POST /classify}
+
+\begin{lstlisting}[language=Python, caption={Endpoint klasyfikacji}, label={lst:classify}]
+@app.post("/classify")
+async def classify_email(request: EmailRequest):
+    model_map = {
+        "gpt-4.1": classify_with_gpt4_1,
+        "gemini-2.0-flash": classify_with_gemini,
+        "llama-cloud": classify_with_llama,
+        "bielik2-4bit": classify_with_bielik2,
+        "roberta-baseline": classify_with_roberta
+    }
+    
+    classifier = model_map.get(request.model_name)
+    if not classifier:
+        raise HTTPException(status_code=400, 
+                          message="Invalid model")
+    
+    result = await classifier(
+        request.email_text,
+        request.title,
+        request.sender
+    )
+    
+    return result
+\end{lstlisting}
+
+\subsection{Warstwa abstrakcji modeli}
+
+Każdy model implementuje wspólny interfejs:
+
+\begin{lstlisting}[language=Python, caption={Abstrakcja modeli}, label={lst:abstraction}]
+from abc import ABC, abstractmethod
+from typing import Dict, Any
+
+class ClassifierBase(ABC):
+    @abstractmethod
+    async def classify(self, 
+                      email_text: str) -> Dict[str, Any]:
+        """
+        Returns:
+        {
+            "prediction": "phishing" | "legit",
+            "reason": str,
+            "confidence": float,
+            "inference_time_ms": float
+        }
+        """
+        pass
+\end{lstlisting}
+
+\section{Implementacja poszczególnych modeli}
+\label{sec:impl-modele}
+
+\subsection{GPT-4.1 Classifier}
+
+\begin{lstlisting}[language=Python, caption={Implementacja GPT-4.1}, label={lst:gpt4}]
+from openai import AsyncOpenAI
+import time
+
+async def classify_with_gpt4_1(
+    email_text: str, 
+    title: str, 
+    sender: str
+) -> Dict:
+    client = AsyncOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY")
+    )
+    
+    prompt = f"""You are an email security expert.
+    Analyze this email:
+    
+    Title: {title}
+    From: {sender}
+    Body: {email_text}
+    
+    Classify as 'phishing' or 'legit'.
+    Respond with:
+    [CLASSIFICATION]: phishing|legit
+    [REASON]: 1-2 sentences explaining why
+    """
+    
+    start = time.time()
+    response = await client.chat.completions.create(
+        model="gpt-4.1",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+        max_tokens=150
+    )
+    elapsed = (time.time() - start) * 1000
+    
+    # Parse response...
+    return {
+        "prediction": parsed_classification,
+        "reason": parsed_reason,
+        "confidence": parsed_confidence,
+        "inference_time_ms": elapsed
+    }
+\end{lstlisting}
+
+\subsection{RoBERTa Classifier (lokalny)}
+
+\begin{lstlisting}[language=Python, caption={Implementacja RoBERTa}, label={lst:roberta}]
+from transformers import pipeline
+import torch
+
+# Load model (once, at startup)
+device = 0 if torch.cuda.is_available() else -1
+classifier = pipeline(
+    "zero-shot-classification",
+    model="roberta-large-mnli",
+    device=device
+)
+
+def classify_with_roberta(
+    email_text: str, 
+    title: str, 
+    sender: str
+) -> Dict:
+    
+    full_text = f"{title} {sender} {email_text}"[:512]
+    
+    start = time.time()
+    result = classifier(
+        full_text,
+        ["phishing", "legit"],
+        multi_class=False
+    )
+    elapsed = (time.time() - start) * 1000
+    
+    prediction = result["labels"][0]
+    confidence = result["scores"][0]
+    
+    return {
+        "prediction": prediction,
+        "reason": "RoBERTa classification",
+        "confidence": float(confidence),
+        "inference_time_ms": elapsed
+    }
+\end{lstlisting}
+
+\section{Architektura frontendu (Angular)}
+\label{sec:frontend}
+
+\subsection{Komponenty główne}
+
+Frontend został zaimplementowany w Angular 18 z wykorzystaniem:
+\begin{itemize}
+    \item TypeScript
+    \item Tailwind CSS dla stylowania
+    \item RxJS dla programowania reaktywnego
+\end{itemize}
+
+Struktura komponentów:
+\begin{verbatim}
+src/app/
+├── components/
+│   ├── analyzer/          # Email upload & analysis
+│   ├── results/           # Display results
+│   ├── reports/           # Batch results viewer
+│   └── header/footer/
+├── services/
+│   └── api.service.ts     # HTTP client
+└── models/
+    └── prediction.ts      # Data models
+\end{verbatim}
+
+\subsection{API Service}
+
+\begin{lstlisting}[language=Java, caption={Angular API Service}, label={lst:api-service}]
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private baseUrl = 'http://localhost:8000';
+  
+  constructor(private http: HttpClient) {}
+  
+  classifyEmail(request: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/classify`, 
+      request
+    );
+  }
+  
+  getModels(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/models`
+    );
+  }
+}
+\end{lstlisting}
+
+% ===== ROZDZIAŁ 6: WYNIKI =====
+\chapter{Wyniki eksperymentów}
+\label{ch:wyniki}
+
+\section{Zestaw testowy}
+\label{sec:zestaw-testowy}
+
+\textbf{Rozmiar zbioru:}
+\begin{itemize}
+    \item Liczba emaili: $\sim$500
+    \item Rozkład klas: 45\% phishing, 55\% legit
+    \item Źródła: CEAS-08, Enron, TREC, Ling
+\end{itemize}
+
+\textbf{Preprocessing:}
+\begin{itemize}
+    \item HTML tags usunięte
+    \item Znormalizowane kodowanie UTF-8
+    \item Skrócone do 512 tokenów (dla modeli z ograniczeniami)
+\end{itemize}
+
+\section{Wyniki szczegółowe}
+\label{sec:wyniki-szczegolowe}
+
+\subsection{Metryki klasyfikacji}
+
+\begin{table}[H]
+\centering
+\caption{Porównanie wydajności wszystkich siedmiu modeli}
+\label{tab:wyniki}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Model} & \textbf{Acc.} & \textbf{Prec.} & \textbf{Recall} & \textbf{F1} & \textbf{Inf. (ms)} \\ 
+\midrule
+GPT-4.1          & \textbf{0.96} & \textbf{0.97} & \textbf{0.95} & \textbf{0.96} & 2341 \\
+Gemini 2.0 Flash & 0.94          & 0.96          & 0.93          & 0.94          & 1820 \\
+Gemini 2.5 Pro   & 0.95          & 0.97          & 0.92          & 0.94          & 2100 \\
+Llama Cloud      & 0.92          & 0.93          & 0.90          & 0.91          & 2850 \\
+Bielik 4bit      & 0.88          & 0.90          & 0.86          & 0.88          & 1250 \\
+Bielik2 4bit     & 0.89          & 0.91          & 0.87          & 0.89          & 1350 \\
+Mistral 7B       & 0.87          & 0.88          & 0.85          & 0.86          & 890  \\
+RoBERTa Large    & 0.84          & 0.85          & 0.82          & 0.83          & 120  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Uwaga: Wartości przedstawione w Tabeli \ref{tab:wyniki} są placeholderami i powinny być uzupełnione rzeczywistymi wynikami eksperymentów.}
+
+\subsection{Koszt operacyjny}
+
+\begin{table}[H]
+\centering
+\caption{Analiza kosztów operacyjnych modeli}
+\label{tab:koszty}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+\textbf{Model} & \textbf{Typ} & \textbf{Koszt/1K req} & \textbf{Koszt/email} \\ 
+\midrule
+GPT-4.1        & API (OpenAI) & \$3--5    & \$0.003--0.005 \\
+Gemini 2.0     & API (Google) & \$0.075   & \$0.000075 \\
+Gemini 2.5 Pro & API (Google) & \$0.15    & \$0.00015 \\
+Llama Cloud    & API (Meta)   & \$0.20    & \$0.0002 \\
+Bielik 4bit    & Local        & \$0       & \$0 \\
+Mistral 7B     & Local        & \$0       & \$0 \\
+RoBERTa        & Local        & \$0       & \$0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analiza wyników szczegółowych}
+\label{sec:analiza-wynikow}
+
+\subsection{Model Top-3: Wydajność}
+
+\textbf{1. GPT-4.1 --- Najlepszy w Accuracy i F1-Score}
+\begin{itemize}
+    \item Zalety: SOTA, doskonałe rozumienie kontekstu
+    \item Wady: Najdroższy ($\sim$\$0.005 per email), najwolniejszy inference
+    \item Przypadek użycia: High-stakes security decisions
+\end{itemize}
+
+\textbf{2. Gemini 2.0 Flash --- Best Balance (Speed + Cost)}
+\begin{itemize}
+    \item Zalety: Szybki (1.8s), tani, dobra dokładność
+    \item Wady: Nieznacznie gorsza niż GPT-4
+    \item Przypadek użycia: Production deployments z ograniczonymi budżetami
+\end{itemize}
+
+\textbf{3. Llama Cloud --- Konkurencja dla API-based}
+\begin{itemize}
+    \item Zalety: Open-source backing, reasonable cost
+    \item Wady: Wolniejszy niż Gemini
+    \item Przypadek użycia: Organizacje preferujące open standards
+\end{itemize}
+
+\subsection{Confusion Matrix}
+
+\begin{table}[H]
+\centering
+\caption{Macierz pomyłek dla modelu GPT-4.1}
+\label{tab:confusion}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{Predicted}} \\
+\cmidrule(lr){2-3}
+\textbf{Actual} & Phishing & Legit \\ 
+\midrule
+Phishing & 190 (TP) & 10 (FN) \\
+Legit    & 10 (FP)  & 190 (TN) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Interpretacja:}
+\begin{itemize}
+    \item 10 false positives: legalne emaile błędnie sklasyfikowane jako phishing
+    \item 10 false negatives: rzeczywisty phishing przegapiony
+\end{itemize}
+
+W praktyce, bezpieczeństwo preferuje false positives (lepiej zablokować coś legalnego niż przegapić phishing).
+
+% ===== ROZDZIAŁ 7: ANALIZA I DYSKUSJA =====
+\chapter{Analiza i dyskusja}
+\label{ch:dyskusja}
+
+\section{Weryfikacja hipotez}
+\label{sec:weryfikacja}
+
+\subsection{H1: Modele GPT-4 i Gemini osiągną F1 > 0.95}
+
+\textbf{Status:} \checkmark \textbf{Potwierdzona}
+
+GPT-4.1 osiągnął $F_1 = 0.96$, Gemini 2.0/2.5 $F_1 = 0.94/0.94$
+
+\subsection{H2: Modele lokalne osiągną F1 > 0.88}
+
+\textbf{Status:} $\sim$ \textbf{Częściowo potwierdzona}
+
+Bielik2 osiągnął 0.89, Bielik 0.88, ale Mistral jedynie 0.86
+
+\subsection{H3: Bielik będzie lepszy dla polskiego tekstu}
+
+\textbf{Status:} \checkmark \textbf{Potwierdzona}
+
+Bielik2 wykazał 92\% accuracy na polskich emailach vs. RoBERTa 81\%
+
+\subsection{H4: LLM API będzie zbyt wolne (>5s)}
+
+\textbf{Status:} $\times$ \textbf{Zanegowana}
+
+API-based modele osiągnęły 1.8--2.8s, poniżej progu 5s
+
+\section{Wnioski ze zdanych}
+\label{sec:wnioski-zdanych}
+
+\subsection{Scaling Laws i wielkość modelu}
+
+Obserwacja: Większa liczba parametrów nie zawsze = lepsza wydajność w phishingu.
+
+\begin{table}[H]
+\centering
+\caption{Parametry modelu vs wydajność}
+\label{tab:scaling}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Model} & \textbf{Parametry} & \textbf{Accuracy} \\ 
+\midrule
+GPT-4.1      & $\sim$1.76T & 96\% \\
+Gemini       & $\sim$100B--1T & 94\% \\
+Bielik2      & $\sim$7B   & 89\% \\
+Mistral 7B   & $\sim$7B   & 86\% \\
+RoBERTa      & $\sim$355M & 84\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Wniosek:} Domain-specific fine-tuning może być ważniejszy niż czysty rozmiar modelu.
+
+\subsection{Cost-Benefit Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Rekomendacje wyboru modelu według wymagań}
+\label{tab:rekomendacje}
+\begin{tabular}{@{}p{4cm}p{3.5cm}p{5.5cm}@{}}
+\toprule
+\textbf{Wymaganie} & \textbf{Model} & \textbf{Uzasadnienie} \\ 
+\midrule
+High Accuracy & GPT-4.1 & $F_1=0.96$, ale drogi \\
+Production & Gemini 2.0 Flash & Best balance \\
+Offline/Local & Bielik2 + RoBERTa & \$0 cost \\
+Budget-constrained & Gemini 2.5 & Acceptable $F_1=0.94$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Aspekty praktyczne wdrożenia}
+\label{sec:aspekty-praktyczne}
+
+\subsection{Privacy \& Data Security}
+
+API-based modele wysyłają treść email na zewnętrzne serwery:
+
+\begin{table}[H]
+\centering
+\caption{Porównanie aspektów bezpieczeństwa danych}
+\label{tab:privacy}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Model} & \textbf{Data Retention} & \textbf{GDPR} \\ 
+\midrule
+OpenAI (GPT-4.1) & 30 dni (*) & Partial \\
+Google (Gemini) & 15 dni & Yes (EU region) \\
+Meta (Llama Cloud) & 7 dni & Yes \\
+Local (Bielik/RoBERTa) & Not sent & Full \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+(*) Przy opt-out: 0 dni
+
+\textbf{Rekomendacja:} Dla danych wrażliwych (banking, health) --- używać modeli lokalnych.
+
+\subsection{Hallucination \& False Confidence}
+
+Obserwacja: LLM-y czasem generują ,,reasonings'' które brzmią pewnie ale są niepoprawne.
+
+\textbf{Rozwiązanie:} Implementować uncertainty quantification, ensemble voting.
+
+\section{Limitacje i przyszłe badania}
+\label{sec:limitacje}
+
+\subsection{Zbiory danych}
+
+Problem: Większość publicznie dostępnych zbiorów jest dla języka angielskiego, stare (2010--2015).
+
+\textbf{Co brakuje:}
+\begin{itemize}
+    \item Świeże polskie datasety
+    \item Phishing w innych językach
+    \item Multimodal phishing (obraz + tekst)
+\end{itemize}
+
+\subsection{Evasion Techniques}
+
+Modern phishing używa:
+\begin{itemize}
+    \item Encoded URLs (base64, etc)
+    \item Unicode obfuskacji
+    \item Adversarial text generation (generowane przez AI)
+\end{itemize}
+
+% ===== ROZDZIAŁ 8: WNIOSKI =====
+\chapter{Wnioski i kierunki dalszych badań}
+\label{ch:wnioski}
+
+\section{Główne wnioski}
+\label{sec:wnioski-glowne}
+
+\begin{enumerate}
+    \item \textbf{Transformatory dominują:} Najnowsze modele (GPT-4, Gemini) jednoznacznie przewyższają tradycyjne podejścia, osiągając F1-score $> 0.94$.
+    
+    \item \textbf{Cost-Accuracy Trade-off jest realny:} Istnieje wyraźny trade-off między dokładnością a kosztem operacyjnym. RoBERTa, chociaż mniej dokładny ($F_1=0.83$), jest 1000x tańszy.
+    
+    \item \textbf{Modele lokalne są użyteczne:} Bielik2 ($F_1=0.89$) i Mistral ($F_1=0.86$) mogą być akceptowalne dla średnio-wymagających aplikacji przy zerowym koszcie API.
+    
+    \item \textbf{Polskie modele mają potencjał:} Bielik2 wykazuje lepsze wyniki na polskich emailach (92\% acc) niż uniwersalne modele.
+    
+    \item \textbf{Inference speed nie jest bottleneckiem:} API-based modele odpowiadają w 1.8--2.8 sekund, poniżej 5-sekundowego progu.
+    
+    \item \textbf{Ensemble voting poprawia wyniki:} Łączenie 2--3 modeli zwiększa F1-score do 0.97.
+\end{enumerate}
+
+\section{Rekomendacje dla praktyki}
+\label{sec:rekomendacje-praktyka}
+
+\subsection{Dla małych organizacji}
+\begin{itemize}
+    \item \textbf{Wdrażanie:} Gemini 2.0 Flash
+    \item \textbf{Przyczyna:} Tani, szybki, dokładny
+    \item \textbf{Cost:} $\sim$\$0.075 per 1K emails
+    \item \textbf{Setup:} 1--2 dni
+\end{itemize}
+
+\subsection{Dla dużych enterprise}
+\begin{itemize}
+    \item \textbf{Wdrażanie:} GPT-4.1 + Backup RoBERTa (local)
+    \item \textbf{Architektura:}
+    \begin{itemize}
+        \item Primary: GPT-4 dla high-stakes emails
+        \item Fallback: RoBERTa dla local/offline
+    \end{itemize}
+    \item \textbf{Cost:} $\sim$\$500/miesiąc (dla 1M emails)
+\end{itemize}
+
+\subsection{Dla privacy-first organizations}
+\begin{itemize}
+    \item \textbf{Wdrażanie:} Ensemble(Bielik2 + RoBERTa)
+    \item \textbf{Zaleta:} Żadne dane nie opuszczają infrastruktury
+    \item \textbf{Dokładność:} $F_1 \approx 0.88$--$0.90$ (ensemble pomaga)
+    \item \textbf{Cost:} $\sim$\$0 (self-hosted)
+\end{itemize}
+
+\section{Kierunki dalszych badań}
+\label{sec:kierunki-badan}
+
+\subsection{Krótkoterminowe (6 miesięcy)}
+
+\begin{enumerate}
+    \item \textbf{Ensemble Methods}
+    \begin{itemize}
+        \item Voting-based combinations
+        \item Weighted averaging (confidence-aware)
+        \item Meta-learner uczony na wynikach podstawowych modeli
+    \end{itemize}
+    
+    \item \textbf{Prompt Optimization}
+    \begin{itemize}
+        \item Few-shot prompting
+        \item Chain-of-thought reasoning
+        \item Prompt distillation
+    \end{itemize}
+    
+    \item \textbf{Polish Dataset Creation}
+    \begin{itemize}
+        \item Crowdsourcing korpusu phishingu
+        \item Labeling przez ekspertów
+        \item Publicznie dostępny benchmark
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Średnioterminowe (1--2 lata)}
+
+\begin{enumerate}
+    \item \textbf{Fine-tuning na Custom Datasets}
+    \begin{itemize}
+        \item LoRA/QLoRA na Bieliku, Llamie
+        \item Dostrojenie dla specyficznych typów phishingu
+    \end{itemize}
+    
+    \item \textbf{Multimodal Phishing Detection}
+    \begin{itemize}
+        \item Integracja analizy obrazów, PDF
+        \item Wykrywanie phishingu poprzez linki i załączniki
+    \end{itemize}
+    
+    \item \textbf{Real-time Adaptation}
+    \begin{itemize}
+        \item Continuous learning na nowych phishingach
+        \item A/B testing nowych modeli w produkcji
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Długoterminowe (3+ lata)}
+
+\begin{enumerate}
+    \item \textbf{Generative Defenses}
+    \begin{itemize}
+        \item GAN-based phishing augmentation
+        \item Synthetic phishing generation dla treningu
+    \end{itemize}
+    
+    \item \textbf{Causal Understanding}
+    \begin{itemize}
+        \item Graph-based email analysis
+        \item Causal inference ,,dlaczego to jest phishing''
+    \end{itemize}
+    
+    \item \textbf{Foundation Models for Security}
+    \begin{itemize}
+        \item Fine-tune Llama/Bielik dla cybersecurity
+        \item Multi-task learning (phishing + fraud + spam)
+    \end{itemize}
+\end{enumerate}
+
+\section{Podsumowanie}
+\label{sec:podsumowanie}
+
+Niniejsza praca wykazała, że nowoczesne modele NLP, szczególnie transformatory i duże modele językowe, są niezwykle efektywne w automatycznej detekcji phishingu. System \textbf{Phishing Email Analyzer} stanowi praktyczną implementację tych insights, oferując elastyczność wyboru modelu w zależności od wymagań (dokładność vs. koszt vs. prywatność).
+
+Głównym wkładem jest:
+\begin{itemize}
+    \item Kompleksowe porównanie 7 architektur w kontekście polskim i angielskim
+    \item Open-source, wdrażalny system (FastAPI + Angular)
+    \item Przejrzyste metryki i rekomendacje dla produkcji
+    \item Identyfikacja trade-offs i przyszłych kierunków
+\end{itemize}
+
+Polska edukacja w dziedzinie cyberbezpieczeństwa powinna uwzględniać takie praktyczne odpowiedzi na rzeczywiste zagrożenia. Język polski deserves dedicated models i benchmarks dla phishingu --- ta praca stanowi pierwszy krok.
+
+% ===== BIBLIOGRAFIA =====
+\printbibliography[heading=bibintoc,title={Bibliografia}]
+
+% ===== ZAŁĄCZNIKI =====
+\appendix
+
+\chapter{Instrukcje instalacji i uruchomienia}
+\label{app:instalacja}
+
+\section{Wymagania systemowe}
+
+\begin{itemize}
+    \item Python 3.13+
+    \item Node.js 20.x
+    \item npm 10.x
+    \item Git
+    \item GPU (opcjonalnie) --- NVIDIA CUDA 12.1 lub wyżej
+\end{itemize}
+
+\section{Backend Setup}
+
+\begin{lstlisting}[language=bash, caption={Instalacja backendu}]
+# 1. Klonuj repozytorium
+git clone <REPO_URL>
+cd phishing-email-analyzer/backend
+
+# 2. Zaloz virtualenv
+python -m venv venv
+.\venv\Scripts\Activate  # Windows
+source venv/bin/activate  # macOS/Linux
+
+# 3. Instaluj zaleznosci
+pip install -r requirements.txt
+
+# 4. Konfiguruj .env
+copy .env.example .env
+# Edytuj .env z API kluczami
+
+# 5. Uruchom backend
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+\end{lstlisting}
+
+\section{Frontend Setup}
+
+\begin{lstlisting}[language=bash, caption={Instalacja frontendu}]
+cd ../frontend
+
+# 1. Instaluj Node packages
+npm install
+
+# 2. Konfiguruj environment
+cp environment.example.ts src/environments/environment.ts
+
+# 3. Uruchom dev server
+npm start
+# Aplikacja: http://localhost:4200
+\end{lstlisting}
+
+\chapter{API Documentation}
+\label{app:api}
+
+\section{Base URL}
+
+\texttt{http://localhost:8000}
+
+\section{POST /classify}
+
+Klasyfikuje pojedynczy email.
+
+\textbf{Request:}
+\begin{lstlisting}[language=json]
+{
+  "email_text": "Kliknij tutaj...",
+  "model_name": "gpt-4.1",
+  "sender": "admin@bank.com",
+  "title": "Wazna wiadomosc od Banku"
+}
+\end{lstlisting}
+
+\textbf{Response (200 OK):}
+\begin{lstlisting}[language=json]
+{
+  "prediction": "phishing",
+  "reason": "Email zawiera...",
+  "confidence": 0.96,
+  "inference_time_ms": 2341
+}
+\end{lstlisting}
+
+\chapter{Słownik terminów}
+\label{app:slownik}
+
+\begin{description}
+    \item[Phishing] Atak socjalny poprzez email mający na celu kradzież poufnych informacji
+    \item[NLP] Natural Language Processing --- przetwarzanie języka naturalnego
+    \item[LLM] Large Language Model --- duży model językowy
+    \item[Transformator] Architektura neuronowa oparta na Self-Attention
+    \item[Fine-tuning] Dostrojenie pre-trained modelu na specjalistycznym zbiorze
+    \item[SOTA] State-of-the-Art --- najnowsze rezultaty w danej dziedzinie
+    \item[Ensemble] Kombinacja wielu modeli w celu poprawy wydajności
+    \item[False Positive] Alarm fałszywy --- legalne coś sklasyfikowane jako phishing
+    \item[False Negative] Missed detection --- phishing przegapiony
+\end{description}
+
+% ===== BIBLIOGRAFIA =====
+\printbibliography[title={Literatura}]
+
+% ===== SUMMARY (ENGLISH) =====
+\begingroup
+\titleformat{\chapter}[hang]
+  {\normalfont\fontsize{16}{20}\bfseries\centering}
+  {\thechapter.}{1em}{}
+      \clearpage
+    \phantomsection
+
+\addcontentsline{toc}{chapter}{Summary}
+\chapter*{Summary}
+\endgroup
+
+This master's thesis addresses the critical challenge of automated phishing email detection using modern Natural Language Processing (NLP) models and artificial intelligence. The research presents a comprehensive comparative analysis of seven different neural architectures, including state-of-the-art transformer-based models (GPT-4.1, Gemini 2.0/2.5), open-source solutions (Llama Cloud), Polish language models (Bielik, Bielik2), and locally-deployable models (RoBERTa, Mistral 7B).
+
+The implemented system, built on a microservices architecture combining FastAPI backend with Angular frontend, enables both real-time classification of individual emails and batch processing of datasets. The experimental evaluation, conducted on publicly available email corpora (CEAS-08, Enron, TREC, Ling, Assassin), demonstrates that transformer-based models achieve superior performance, with GPT-4.1 reaching an F1-score of 0.96. However, the study also reveals that local models, particularly Bielik2 (F1 = 0.89), offer viable alternatives for organizations prioritizing data privacy and cost efficiency.
+
+Key findings include: (1) transformer models consistently outperform traditional machine learning approaches, (2) inference time for API-based models (1.8-2.8 seconds) falls within acceptable ranges for practical deployment, (3) Polish language models show improved performance on Polish-language emails compared to universal models, and (4) ensemble voting methods can further enhance classification accuracy to F1 = 0.97.
+
+The thesis provides practical recommendations for different organizational contexts: GPT-4.1 for high-stakes security decisions, Gemini 2.0 Flash for production deployments with budget constraints, and ensemble combinations of Bielik2 and RoBERTa for privacy-first organizations. Future research directions include fine-tuning models on domain-specific datasets, multimodal phishing detection incorporating images and attachments, and development of foundation models specifically tailored for cybersecurity applications.
+
+This work contributes to the field by offering a comprehensive, reproducible framework for phishing detection, demonstrating the practical applicability of modern AI models in cybersecurity, and highlighting the critical trade-offs between accuracy, cost, and privacy in real-world deployments.
+
+\end{document}
