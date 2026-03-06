@@ -175,6 +175,12 @@ async def analyze_email(request: EmailRequest):
     return response
 
 
+@app.post("/test-all-models")
+async def test_models_endpoint(request: EmailRequest):
+    """Test all available models on a given email."""
+    return await test_all_models(request.email_text)
+
+
 @app.post("/analyze-batch")
 async def analyze_batch(batch_request: dict):
     """Analyze multiple emails with all available models."""
