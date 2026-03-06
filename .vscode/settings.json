@@ -2,33 +2,20 @@
   "latex-workshop.latex.recipes": [
     {
       "name": "pdfLaTeX with shell-escape → biber → pdfLaTeX × 2",
-      "tools": [
-        "pdflatex-shell-escape",
-        "biber",
-        "pdflatex-shell-escape",
-        "pdflatex-shell-escape"
-      ]
+      "tools": ["pdflatex-shell-escape", "biber", "pdflatex-shell-escape", "pdflatex-shell-escape"]
     }
   ],
   "latex-workshop.latex.tools": [
     {
       "name": "pdflatex-shell-escape",
       "command": "pdflatex",
-      "args": [
-        "--shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "%DOC%"
-      ],
+      "args": ["--shell-escape", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"],
       "env": {}
     },
     {
       "name": "biber",
       "command": "biber",
-      "args": [
-        "%DOCFILE%"
-      ],
+      "args": ["%DOCFILE%"],
       "env": {}
     }
   ],
