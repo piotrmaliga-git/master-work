@@ -1,4 +1,4 @@
-import { Component, Input, signal, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
@@ -30,6 +30,7 @@ export class AnalyzerComponent {
     { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
     { id: 'mistral-7b', name: 'Mistral 7B' },
     { id: 'llama-cloud', name: 'Llama Cloud' },
+    { id: 'bielik-2-4bit', name: 'Bielik 2 (4-bit)' },
   ];
   onAnalyze() {
     if (!this.emailText().trim()) {
