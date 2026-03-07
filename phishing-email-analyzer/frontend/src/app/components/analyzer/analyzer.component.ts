@@ -28,11 +28,8 @@ export class AnalyzerComponent {
   models = [
     { id: 'gpt-4.1', name: 'GPT-4.1' },
     { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
-    { id: 'llama-cloud', name: 'Llama Cloud' },
     { id: 'mistral-7b', name: 'Mistral 7B' },
-    { id: 'bielik-4bit', name: 'Bielik (4-bit)' },
-    { id: 'bielik2-4bit', name: 'Bielik 2 (4-bit)' },
-    { id: 'roberta-baseline', name: 'RoBERTa (Baseline MNLI)' },
+    { id: 'llama-cloud', name: 'Llama Cloud' },
   ];
   onAnalyze() {
     if (!this.emailText().trim()) {
