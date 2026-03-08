@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+npm --prefix phishing-email-analyzer/frontend exec -- commitlint --config phishing-email-analyzer/frontend/commitlint.config.js --edit "$1"
