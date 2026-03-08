@@ -5,7 +5,14 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 
+# Bielik 2 Model Configuration (optional - defaults are set in code)
 BIELIK_MODEL_ID = "speakleash/Bielik-11B-v2.2-Instruct"
+BIELIK_LOAD_4BIT = False
+BIELIK_TEMPERATURE = 0
+BIELIK_MAX_TOKENS = 512
+BIELIK_TOP_K = 100
+BIELIK_TOP_P = 1.0
+
 SYSTEM_PROMPT = """Jesteś ekspertem od wykrywania phishingu. Przeanalizuj wiadomość email i określ:
 1. Klasyfikację: 'phishing' lub 'legit'
 2. Szczegółowe wyjaśnienie dlaczego tak sklasyfikowałeś/aś wiadomość, wskazując konkretne czerwone flagi lub wskaźniki legalności.
@@ -60,7 +67,7 @@ def _load_model() -> tuple[AutoTokenizer, AutoModelForCausalLM, torch.device]:
 
         model_id = os.getenv("BIELIK_MODEL_ID") or BIELIK_MODEL_ID
         hf_token = os.getenv("HF_TOKEN", "").strip() or None
-        load_4_bit = os.getenv("BIELIK_LOAD_4BIT", "true").lower() == "true"
+        load_4_bit = os.getenv("BIELIK_LOAD_4BIT", str(BIELIK_LOAD_4BIT)).lower() == "true"
         
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -127,10 +134,10 @@ def classify_with_bielik2(email_text: str) -> tuple[str, str]:
         ).to(model.device)
 
         # Generation parameters
-        temperature = float(os.getenv("BIELIK_TEMPERATURE", "0.7"))
-        max_tokens = int(os.getenv("BIELIK_MAX_TOKENS", "512"))
-        top_k = int(os.getenv("BIELIK_TOP_K", "100"))
-        top_p = float(os.getenv("BIELIK_TOP_P", "1.0"))
+        temperature = float(os.getenv("BIELIK_TEMPERATURE", str(BIELIK_TEMPERATURE)))
+        max_tokens = int(os.getenv("BIELIK_MAX_TOKENS", str(BIELIK_MAX_TOKENS)))
+        top_k = int(os.getenv("BIELIK_TOP_K", str(BIELIK_TOP_K)))
+        top_p = float(os.getenv("BIELIK_TOP_P", str(BIELIK_TOP_P)))
 
         # Generate response
         with torch.no_grad():
