@@ -18,12 +18,6 @@ module.exports = {
         'revert',
       ],
     ],
-    'scope-enum': [
-      2,
-      'always',
-      ['ui', 'api', 'auth', 'analyzer', 'core', 'shared', 'deps', 'ci', 'tests'],
-    ],
-    'scope-empty': [2, 'never'],
     'header-max-length': [2, 'always', 100],
   },
 };
