@@ -72,6 +72,7 @@ def run_model(name: str, classify_fn, samples: list[dict]) -> dict:
             "id": sample["id"],
             "ground_truth": sample.get("ground_truth", "?"),
             "prediction": prediction,
+            "reason": reason,
             "correct": correct,
             "elapsed_ms": elapsed_ms,
         })
