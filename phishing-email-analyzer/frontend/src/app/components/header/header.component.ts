@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, PLATFORM_ID } from '@angula
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ThemeService } from '../../services/theme.service';
+import { headerTranslations } from '../../utils/translations/translations';
 
 @Component({
   selector: 'page-header',
@@ -15,10 +16,10 @@ export class HeaderComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
 
-  readonly switchToLight = $localize`:header|Tooltip and aria label for light mode toggle@@header.switchToLight:Switch to light mode`;
-  readonly switchToDark = $localize`:header|Tooltip and aria label for dark mode toggle@@header.switchToDark:Switch to dark mode`;
-  readonly switchToEnglish = $localize`:header|Tooltip and aria label for English language switch@@header.switchToEnglish:Switch to English`;
-  readonly switchToPolish = $localize`:header|Tooltip and aria label for Polish language switch@@header.switchToPolish:Switch to Polish`;
+  readonly switchToLight = headerTranslations['switchToLight'];
+  readonly switchToDark = headerTranslations['switchToDark'];
+  readonly switchToEnglish = headerTranslations['switchToEnglish'];
+  readonly switchToPolish = headerTranslations['switchToPolish'];
 
   isPolishLocale(): boolean {
     const lang = this.document.documentElement.lang || '';
