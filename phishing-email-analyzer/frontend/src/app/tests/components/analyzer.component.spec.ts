@@ -126,7 +126,7 @@ describe('AnalyzerComponent', () => {
 
   it('should pass configured options to model selector', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const select = compiled.querySelector('[data-testid="model-select"]') as any;
+    const select = compiled.querySelector('[data-testid="model-select"]');
 
     expect(select).toBeTruthy();
     expect(component.models.length).toBe(5);
