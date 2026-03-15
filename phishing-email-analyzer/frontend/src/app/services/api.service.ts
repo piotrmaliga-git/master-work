@@ -7,7 +7,7 @@ import { AnalysisResult, EmailRequest } from '../models/prediction';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = 'http://localhost:8000';
 
   constructor(private readonly http: HttpClient) {}
 
