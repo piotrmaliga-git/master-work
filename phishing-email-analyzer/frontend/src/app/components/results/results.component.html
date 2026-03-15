@@ -1,20 +1,24 @@
 @if (result(); as res) {
   <div class="results-wrapper">
-    <p-card header="Analysis Result" styleClass="results-card">
+    <p-card
+      i18n-header="results|Results card title@@results.cardHeader"
+      header="Analysis Result"
+      styleClass="results-card"
+    >
       <div class="result-row">
-        <span>Model</span>
+        <span i18n="results|Label for analyzed model@@results.model">Model</span>
         <strong>{{ res.model }}</strong>
       </div>
       <div class="result-row">
-        <span>Sender</span>
+        <span i18n="results|Label for sender address@@results.sender">Sender</span>
         <strong>{{ res.sender }}</strong>
       </div>
       <div class="result-row">
-        <span>Title</span>
+        <span i18n="results|Label for email subject@@results.title">Title</span>
         <strong>{{ res.title }}</strong>
       </div>
       <div class="result-row">
-        <span>Prediction</span>
+        <span i18n="results|Label for classification result@@results.prediction">Prediction</span>
         <p-tag
           [value]="res.prediction | uppercase"
           [severity]="res.prediction === 'phishing' ? 'danger' : 'success'"
@@ -22,16 +26,18 @@
       </div>
 
       <div class="reason-block">
-        <span>Detailed Analysis</span>
+        <span i18n="results|Section title for detailed reasoning@@results.detailedAnalysis"
+          >Detailed Analysis</span
+        >
         <div class="reason-content" [innerHTML]="res.reason | formatReason"></div>
       </div>
 
       <div class="result-row">
-        <span>Response Time</span>
+        <span i18n="results|Label for API response time@@results.responseTime">Response Time</span>
         <strong>{{ res.response_time_ms | formatTime }}</strong>
       </div>
       <div class="result-row">
-        <span>Timestamp</span>
+        <span i18n="results|Label for result timestamp@@results.timestamp">Timestamp</span>
         <strong>{{ res.timestamp | date: 'short' }}</strong>
       </div>
     </p-card>

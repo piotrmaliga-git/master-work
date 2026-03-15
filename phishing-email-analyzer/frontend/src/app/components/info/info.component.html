@@ -1,6 +1,10 @@
-<p-card header="Available Models" styleClass="info-card">
+<p-card
+  i18n-header="info|Card title for available models section@@info.cardHeader"
+  header="Available Models"
+  styleClass="info-card"
+>
   <ul class="model-list">
-    @for (model of models; track model.name) {
+    @for (model of models(); track model.name) {
       <li>
         <strong>{{ model.name }}:</strong>
         <span>{{ model.description }}</span>

@@ -2,24 +2,43 @@
   <div class="app-header-inner">
     <div class="theme-switcher">
       <button
+        data-testid="language-toggle"
+        pButton
+        type="button"
+        text
+        rounded
+        [label]="isPolishLocale() ? 'EN' : 'PL'"
+        [attr.aria-label]="isPolishLocale() ? switchToEnglish : switchToPolish"
+        [attr.title]="isPolishLocale() ? switchToEnglish : switchToPolish"
+        (click)="toggleLanguage()"
+      ></button>
+      <button
         data-testid="theme-toggle"
         pButton
         type="button"
         text
         rounded
         [icon]="theme.isDark() ? 'pi pi-sun' : 'pi pi-moon'"
-        [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
-        [attr.title]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        [attr.aria-label]="theme.isDark() ? switchToLight : switchToDark"
+        [attr.title]="theme.isDark() ? switchToLight : switchToDark"
         (click)="toggleTheme()"
       ></button>
     </div>
 
     <div class="header-title-block">
       <h1>
-        <img src="/search.png" alt="Search icon" />
-        <span>Phishing Email Analyzer</span>
+        <img
+          src="/search.png"
+          i18n-alt="header|Alt text for header logo icon@@header.logoAlt"
+          alt="Search icon"
+        />
+        <span i18n="header|Application title in page header@@header.title"
+          >Phishing Email Analyzer</span
+        >
       </h1>
-      <p>Paste an email below and select an AI model to analyze phishing risk</p>
+      <p i18n="header|Header subtitle describing app purpose@@header.subtitle">
+        Paste an email below and select an AI model to analyze phishing risk
+      </p>
     </div>
   </div>
 </header>

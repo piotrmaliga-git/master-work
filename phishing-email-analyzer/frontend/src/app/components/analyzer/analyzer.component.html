@@ -1,7 +1,11 @@
 <p-card styleClass="mb-8 analyzer-card">
   <div class="analyzer-form">
     <div class="field">
-      <label for="model-select">Select AI Model</label>
+      <label
+        for="model-select"
+        i18n="analyzer|Model selector field label@@analyzer.modelSelectLabel"
+        >Select AI Model</label
+      >
       <p-select
         inputId="model-select"
         data-testid="model-select"
@@ -16,7 +20,9 @@
     </div>
 
     <div class="field">
-      <label for="sender-input">Sender Email</label>
+      <label for="sender-input" i18n="analyzer|Sender input field label@@analyzer.senderLabel"
+        >Sender Email</label
+      >
       <input
         id="sender-input"
         data-testid="sender-input"
@@ -24,12 +30,17 @@
         type="text"
         [(ngModel)]="sender"
         [disabled]="loading()"
+        i18n-placeholder="analyzer|Sender input placeholder@@analyzer.senderPlaceholder"
         placeholder="e.g. attacker@example.com"
       />
     </div>
 
     <div class="field">
-      <label for="title-input">Email Title/Subject</label>
+      <label
+        for="title-input"
+        i18n="analyzer|Email subject input field label@@analyzer.emailTitleLabel"
+        >Email Title/Subject</label
+      >
       <input
         id="title-input"
         data-testid="title-input"
@@ -37,23 +48,34 @@
         type="text"
         [(ngModel)]="title"
         [disabled]="loading()"
+        i18n-placeholder="analyzer|Email subject input placeholder@@analyzer.emailTitlePlaceholder"
         placeholder="e.g. Urgent: Verify Your Account"
       />
     </div>
 
     <div class="field">
-      <label for="email-input">Email content</label>
+      <label for="email-input" i18n="analyzer|Email body textarea label@@analyzer.emailContentLabel"
+        >Email content</label
+      >
       <textarea
         id="email-input"
         data-testid="email-input"
         pTextarea
+        i18n-aria-label="analyzer|ARIA label for email textarea@@analyzer.emailContentAria"
         aria-label="Email content"
         [(ngModel)]="emailText"
         [disabled]="loading()"
+        i18n-placeholder="
+          analyzer|Email body textarea placeholder@@analyzer.emailContentPlaceholder"
         placeholder="Paste email content here..."
         rows="10"
       ></textarea>
-      <small class="char-counter">{{ emailText().length }} characters</small>
+      <small class="char-counter"
+        >{{ emailText().length }}
+        <span i18n="analyzer|Character counter unit label@@analyzer.characters"
+          >characters</span
+        ></small
+      >
     </div>
 
     <div class="action-row">
@@ -61,6 +83,7 @@
         data-testid="analyze-button"
         pButton
         type="button"
+        i18n-label="analyzer|Analyze action button label@@analyzer.analyzeButton"
         label="Analyze"
         icon="pi pi-search"
         [loading]="loading()"
@@ -71,6 +94,7 @@
         data-testid="clear-button"
         pButton
         type="button"
+        i18n-label="analyzer|Clear form action button label@@analyzer.clearButton"
         label="Clear"
         icon="pi pi-trash"
         severity="secondary"
