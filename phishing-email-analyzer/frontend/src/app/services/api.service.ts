@@ -9,7 +9,7 @@ import { AnalysisResult, EmailRequest } from '../models/prediction';
 export class ApiService {
   private baseUrl = 'http://localhost:8000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   analyze(request: EmailRequest): Observable<AnalysisResult> {
     return this.http.post<AnalysisResult>(`${this.baseUrl}/analyze`, request);
