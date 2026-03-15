@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="pl">
+  <file id="ngi18n" original="ng.template">
+    <unit id="analyzer.modelSelectLabel">
+      <segment>
+        <source>Select AI Model</source>
+        <target>Wybierz model AI</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.senderLabel">
+      <segment>
+        <source>Sender Email</source>
+        <target>Adres nadawcy</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.senderPlaceholder">
+      <segment>
+        <source>e.g. attacker@example.com</source>
+        <target>np. atakujacy@example.com</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailTitleLabel">
+      <segment>
+        <source>Email Title/Subject</source>
+        <target>Temat wiadomosci</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailTitlePlaceholder">
+      <segment>
+        <source>e.g. Urgent: Verify Your Account</source>
+        <target>np. Pilne: Zweryfikuj swoje konto</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentLabel">
+      <segment>
+        <source>Email content</source>
+        <target>Tresc wiadomosci</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentAria">
+      <segment>
+        <source>Email content</source>
+        <target>Tresc wiadomosci</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentPlaceholder">
+      <segment>
+        <source>Paste email content here...</source>
+        <target>Wklej tutaj tresc wiadomosci...</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.characters">
+      <segment>
+        <source>characters</source>
+        <target>znakow</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.analyzeButton">
+      <segment>
+        <source>Analyze</source>
+        <target>Analizuj</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.clearButton">
+      <segment>
+        <source>Clear</source>
+        <target>Wyczysc</target>
+      </segment>
+    </unit>
+    <unit id="analyzer.errorEmptyEmail">
+      <segment>
+        <source>Please enter email text</source>
+        <target>Prosze wprowadzic tresc wiadomosci</target>
+      </segment>
+    </unit>
+    <unit id="footer.copyright">
+      <segment>
+        <source>© 2026 Phishing Email Analyzer. All rights reserved.</source>
+        <target>© 2026 Phishing Email Analyzer. Wszelkie prawa zastrzezone.</target>
+      </segment>
+    </unit>
+    <unit id="header.logoAlt">
+      <segment>
+        <source>Search icon</source>
+        <target>Ikona wyszukiwania</target>
+      </segment>
+    </unit>
+    <unit id="header.title">
+      <segment>
+        <source>Phishing Email Analyzer</source>
+        <target>Phishing Email Analyzer</target>
+      </segment>
+    </unit>
+    <unit id="header.subtitle">
+      <segment>
+        <source> Paste an email below and select an AI model to analyze phishing risk </source>
+        <target> Wklej wiadomosc e-mail i wybierz model AI, aby przeanalizowac ryzyko phishingu </target>
+      </segment>
+    </unit>
+    <unit id="header.switchToLight">
+      <segment>
+        <source>Switch to light mode</source>
+        <target>Przelacz na tryb jasny</target>
+      </segment>
+    </unit>
+    <unit id="header.switchToDark">
+      <segment>
+        <source>Switch to dark mode</source>
+        <target>Przelacz na tryb ciemny</target>
+      </segment>
+    </unit>
+    <unit id="info.cardHeader">
+      <segment>
+        <source>Available Models</source>
+        <target>Dostepne modele</target>
+      </segment>
+    </unit>
+    <unit id="info.models.gpt41">
+      <segment>
+        <source>Latest OpenAI model with improved reasoning</source>
+        <target>Najnowszy model OpenAI z ulepszonym wnioskowaniem</target>
+      </segment>
+    </unit>
+    <unit id="info.models.gemini25Pro">
+      <segment>
+        <source>Google&apos;s latest LLM with advanced understanding</source>
+        <target>Najnowszy model jezykowy Google z zaawansowanym rozumieniem</target>
+      </segment>
+    </unit>
+    <unit id="info.models.mistral7B">
+      <segment>
+        <source>Open-source model from Mistral AI with 7 billion parameters</source>
+        <target>Model open-source od Mistral AI z 7 miliardami parametrow</target>
+      </segment>
+    </unit>
+    <unit id="info.models.llamaCloud">
+      <segment>
+        <source>Meta&apos;s LLM accessed via cloud API</source>
+        <target>Model jezykowy Meta dostepny przez API w chmurze</target>
+      </segment>
+    </unit>
+    <unit id="info.models.bielik24bit">
+      <segment>
+        <source>Polish language model running locally in 4-bit quantization mode</source>
+        <target>Polski model jezykowy dzialajacy lokalnie w trybie kwantyzacji 4-bitowej</target>
+      </segment>
+    </unit>
+    <unit id="results.cardHeader">
+      <segment>
+        <source>Analysis Result</source>
+        <target>Wynik analizy</target>
+      </segment>
+    </unit>
+    <unit id="results.model">
+      <segment>
+        <source>Model</source>
+        <target>Model</target>
+      </segment>
+    </unit>
+    <unit id="results.sender">
+      <segment>
+        <source>Sender</source>
+        <target>Nadawca</target>
+      </segment>
+    </unit>
+    <unit id="results.title">
+      <segment>
+        <source>Title</source>
+        <target>Temat</target>
+      </segment>
+    </unit>
+    <unit id="results.prediction">
+      <segment>
+        <source>Prediction</source>
+        <target>Predykcja</target>
+      </segment>
+    </unit>
+    <unit id="results.detailedAnalysis">
+      <segment>
+        <source>Detailed Analysis</source>
+        <target>Szczegolowa analiza</target>
+      </segment>
+    </unit>
+    <unit id="results.responseTime">
+      <segment>
+        <source>Response Time</source>
+        <target>Czas odpowiedzi</target>
+      </segment>
+    </unit>
+    <unit id="results.timestamp">
+      <segment>
+        <source>Timestamp</source>
+        <target>Data i godzina</target>
+      </segment>
+    </unit>
+    <unit id="notFound.message">
+      <segment>
+        <source>Page not found.</source>
+        <target>Strona nie zostala znaleziona.</target>
+      </segment>
+    </unit>
+    <unit id="notFound.goHome">
+      <segment>
+        <source>Go back to home</source>
+        <target>Wroc na strone glowna</target>
+      </segment>
+    </unit>
+    <unit id="pipes.noReason">
+      <segment>
+        <source>No additional justification.</source>
+        <target>Brak dodatkowego uzasadnienia.</target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

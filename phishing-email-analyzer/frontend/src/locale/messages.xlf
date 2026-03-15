@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+  <file id="ngi18n" original="ng.template">
+    <unit id="analyzer.modelSelectLabel">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:4,6</note>
+      </notes>
+      <segment>
+        <source>Select AI Model</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.senderLabel">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:19,21</note>
+      </notes>
+      <segment>
+        <source>Sender Email</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.senderPlaceholder">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:28,32</note>
+      </notes>
+      <segment>
+        <source>e.g. attacker@example.com</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailTitleLabel">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:33,35</note>
+      </notes>
+      <segment>
+        <source>Email Title/Subject</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailTitlePlaceholder">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:42,46</note>
+      </notes>
+      <segment>
+        <source>e.g. Urgent: Verify Your Account</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentLabel">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:47,49</note>
+      </notes>
+      <segment>
+        <source>Email content</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentAria">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:53,55</note>
+      </notes>
+      <segment>
+        <source>Email content</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.emailContentPlaceholder">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:57,60</note>
+      </notes>
+      <segment>
+        <source>Paste email content here...</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.characters">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:61,64</note>
+      </notes>
+      <segment>
+        <source>characters</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.analyzeButton">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:72,73</note>
+      </notes>
+      <segment>
+        <source>Analyze</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.clearButton">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:83,84</note>
+      </notes>
+      <segment>
+        <source>Clear</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.errorEmptyEmail">
+      <notes>
+        <note category="location">src/app/components/analyzer/analyzer.component.ts:50</note>
+      </notes>
+      <segment>
+        <source>Please enter email text</source>
+      </segment>
+    </unit>
+    <unit id="footer.copyright">
+      <notes>
+        <note category="location">src/app/components/footer/footer.component.html:3,6</note>
+      </notes>
+      <segment>
+        <source>© 2026 Phishing Email Analyzer. All rights reserved.</source>
+      </segment>
+    </unit>
+    <unit id="header.logoAlt">
+      <notes>
+        <note category="location">src/app/components/header/header.component.html:19,20</note>
+      </notes>
+      <segment>
+        <source>Search icon</source>
+      </segment>
+    </unit>
+    <unit id="header.title">
+      <notes>
+        <note category="location">src/app/components/header/header.component.html:20,22</note>
+      </notes>
+      <segment>
+        <source>Phishing Email Analyzer</source>
+      </segment>
+    </unit>
+    <unit id="header.subtitle">
+      <notes>
+        <note category="location">src/app/components/header/header.component.html:23,26</note>
+      </notes>
+      <segment>
+        <source> Paste an email below and select an AI model to analyze phishing risk </source>
+      </segment>
+    </unit>
+    <unit id="header.switchToLight">
+      <notes>
+        <note category="location">src/app/components/header/header.component.ts:15</note>
+      </notes>
+      <segment>
+        <source>Switch to light mode</source>
+      </segment>
+    </unit>
+    <unit id="header.switchToDark">
+      <notes>
+        <note category="location">src/app/components/header/header.component.ts:16</note>
+      </notes>
+      <segment>
+        <source>Switch to dark mode</source>
+      </segment>
+    </unit>
+    <unit id="info.cardHeader">
+      <notes>
+        <note category="location">src/app/components/info/info.component.html:1,2</note>
+      </notes>
+      <segment>
+        <source>Available Models</source>
+      </segment>
+    </unit>
+    <unit id="info.models.gpt41">
+      <notes>
+        <note category="location">src/app/components/info/info.component.ts:16</note>
+      </notes>
+      <segment>
+        <source>Latest OpenAI model with improved reasoning</source>
+      </segment>
+    </unit>
+    <unit id="info.models.gemini25Pro">
+      <notes>
+        <note category="location">src/app/components/info/info.component.ts:20</note>
+      </notes>
+      <segment>
+        <source>Google&apos;s latest LLM with advanced understanding</source>
+      </segment>
+    </unit>
+    <unit id="info.models.mistral7B">
+      <notes>
+        <note category="location">src/app/components/info/info.component.ts:24</note>
+      </notes>
+      <segment>
+        <source>Open-source model from Mistral AI with 7 billion parameters</source>
+      </segment>
+    </unit>
+    <unit id="info.models.llamaCloud">
+      <notes>
+        <note category="location">src/app/components/info/info.component.ts:28</note>
+      </notes>
+      <segment>
+        <source>Meta&apos;s LLM accessed via cloud API</source>
+      </segment>
+    </unit>
+    <unit id="info.models.bielik24bit">
+      <notes>
+        <note category="location">src/app/components/info/info.component.ts:32</note>
+      </notes>
+      <segment>
+        <source>Polish language model running locally in 4-bit quantization mode</source>
+      </segment>
+    </unit>
+    <unit id="results.cardHeader">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:3,4</note>
+      </notes>
+      <segment>
+        <source>Analysis Result</source>
+      </segment>
+    </unit>
+    <unit id="results.model">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:5,6</note>
+      </notes>
+      <segment>
+        <source>Model</source>
+      </segment>
+    </unit>
+    <unit id="results.sender">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:9,10</note>
+      </notes>
+      <segment>
+        <source>Sender</source>
+      </segment>
+    </unit>
+    <unit id="results.title">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:13,14</note>
+      </notes>
+      <segment>
+        <source>Title</source>
+      </segment>
+    </unit>
+    <unit id="results.prediction">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:17,19</note>
+      </notes>
+      <segment>
+        <source>Prediction</source>
+      </segment>
+    </unit>
+    <unit id="results.detailedAnalysis">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:25,26</note>
+      </notes>
+      <segment>
+        <source>Detailed Analysis</source>
+      </segment>
+    </unit>
+    <unit id="results.responseTime">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:30,31</note>
+      </notes>
+      <segment>
+        <source>Response Time</source>
+      </segment>
+    </unit>
+    <unit id="results.timestamp">
+      <notes>
+        <note category="location">src/app/components/results/results.component.html:34,35</note>
+      </notes>
+      <segment>
+        <source>Timestamp</source>
+      </segment>
+    </unit>
+    <unit id="notFound.message">
+      <notes>
+        <note category="location">src/app/pages/not-found/not-found.component.ts:11,12</note>
+      </notes>
+      <segment>
+        <source>Page not found.</source>
+      </segment>
+    </unit>
+    <unit id="notFound.goHome">
+      <notes>
+        <note category="location">src/app/pages/not-found/not-found.component.ts:13,17</note>
+      </notes>
+      <segment>
+        <source>Go back to home</source>
+      </segment>
+    </unit>
+    <unit id="pipes.noReason">
+      <notes>
+        <note category="location">src/app/pipes/format-reason.pipe.ts:13</note>
+      </notes>
+      <segment>
+        <source>No additional justification.</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>
