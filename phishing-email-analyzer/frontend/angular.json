@@ -12,12 +12,18 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "pl": "src/locale/messages.pl.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-            "polyfills": [],
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -40,7 +46,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "550kB",
                   "maximumError": "1MB"
                 },
                 {
@@ -55,6 +61,44 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "en": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "550kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "localize": ["en"]
+            },
+            "en-dev": {
+              "localize": ["en"]
+            },
+            "pl": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "550kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "localize": ["pl"]
+            },
+            "pl-dev": {
+              "localize": ["pl"]
             }
           },
           "defaultConfiguration": "production"
@@ -67,6 +111,12 @@
             },
             "development": {
               "buildTarget": "app:build:development"
+            },
+            "en": {
+              "buildTarget": "app:build:development,en-dev"
+            },
+            "pl": {
+              "buildTarget": "app:build:development,pl-dev"
             }
           },
           "defaultConfiguration": "development"
