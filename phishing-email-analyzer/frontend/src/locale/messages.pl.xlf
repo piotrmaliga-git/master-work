@@ -211,11 +211,5 @@
         <target>Brak dodatkowego uzasadnienia.</target>
       </segment>
     </unit>
-    <unit id="analyzer.modelSelectLabel">
-      <segment>
-        <source>Select AI Model</source>
-        <target>Wybierz model AI</target>
-      </segment>
-    </unit>
   </file>
 </xliff>
