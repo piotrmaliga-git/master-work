@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { pipesTranslations } from '../utils/translations/translations';
 
 @Pipe({
   name: 'formatReason',
@@ -10,7 +11,7 @@ export class FormatReasonPipe implements PipeTransform {
 
   transform(value: string | null | undefined): SafeHtml {
     if (!value) {
-      return $localize`:pipes|Fallback reason when model explanation is empty@@pipes.noReason:No additional justification.`;
+      return pipesTranslations['noReason'];
     }
 
     let formatted = value
