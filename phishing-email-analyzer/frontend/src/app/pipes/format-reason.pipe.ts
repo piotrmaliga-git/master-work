@@ -15,13 +15,13 @@ export class FormatReasonPipe implements PipeTransform {
 
     let formatted = value
       // Convert **bold** to <strong>
-      .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+      .replaceAll(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
       // Convert numbered lists (1. 2. etc) to proper formatting
-      .replace(/^(\d+\.\s+\*\*[^*]+\*\*:?)/gm, '<div class="mt-3 mb-1">$1</div>')
+      .replaceAll(/^(\d+\.\s+\*\*[^*]+\*\*:?)/gm, '<div class="mt-3 mb-1">$1</div>')
       // Add line breaks for better readability
-      .replace(/\n/g, '<br>')
+      .replaceAll('\n', '<br>')
       // Style numbered items
-      .replace(/^(\d+\.)/gm, '<span class="font-bold text-primary">$1</span>');
+      .replaceAll(/^(\d+\.)/gm, '<span class="font-bold text-primary">$1</span>');
 
     return this.sanitizer.bypassSecurityTrustHtml(formatted);
   }
