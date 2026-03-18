@@ -2,7 +2,9 @@ import { Component, ChangeDetectionStrategy, inject, PLATFORM_ID } from '@angula
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ThemeService } from '../../services/theme.service';
+import { LocaleService } from '../../services/locale.service';
 import { headerTranslations } from '../../utils/translations/translations';
+import { LocaleCode } from '../../utils/types/types';
 
 @Component({
   selector: 'page-header',
@@ -12,6 +14,7 @@ import { headerTranslations } from '../../utils/translations/translations';
 })
 export class HeaderComponent {
   readonly theme = inject(ThemeService);
+  private readonly localeService = inject(LocaleService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
 
@@ -28,7 +31,7 @@ export class HeaderComponent {
     return path === '/pl' || path.startsWith('/pl/');
   }
 
-  toggleLanguage() {
+  async toggleLanguage(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -39,12 +42,27 @@ export class HeaderComponent {
     }
 
     const { pathname, search, hash } = location;
-    const withoutLocalePrefix = pathname === '/pl' ? '/' : pathname.replace(/^\/pl(?=\/)/, '');
-    const currentPath = withoutLocalePrefix || '/';
+    const localePrefixMatch = /^\/(en|pl)(?=\/|$)/.exec(pathname);
+    const hadLocalePrefix = Boolean(localePrefixMatch);
+    const currentPath = localePrefixMatch
+      ? pathname.replace(/^\/(en|pl)(?=\/|$)/, '') || '/'
+      : pathname || '/';
+    const nextLocale: LocaleCode = this.isPolishLocale() ? 'en' : 'pl';
 
-    let nextPath = currentPath;
-    if (!this.isPolishLocale()) {
+    // Persist locale preference on the server, but do not block navigation on failure.
+    try {
+      await this.localeService.setPreferredLocale(nextLocale);
+    } catch {
+      // Intentionally ignored: language switch should still work by URL path.
+    }
+
+    let nextPath: string;
+    if (nextLocale === 'pl') {
       nextPath = currentPath === '/' ? '/pl' : `/pl${currentPath}`;
+    } else if (hadLocalePrefix) {
+      nextPath = currentPath === '/' ? '/en' : `/en${currentPath}`;
+    } else {
+      nextPath = currentPath;
     }
 
     location.assign(`${nextPath}${search}${hash}`);

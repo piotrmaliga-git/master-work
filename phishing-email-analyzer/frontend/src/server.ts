@@ -6,11 +6,50 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import type { Request } from 'express';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+const DEFAULT_LOCALE = 'en';
+const LOCALE_COOKIE_NAME = 'preferred_locale';
+const SUPPORTED_LOCALES = new Set(['en', 'pl']);
+
+function getLocaleFromCookie(req: Request): string | null {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) {
+    return null;
+  }
+
+  const cookies = cookieHeader.split(';').map((item) => item.trim());
+  const localePair = cookies.find((item) => item.startsWith(`${LOCALE_COOKIE_NAME}=`));
+  if (!localePair) {
+    return null;
+  }
+
+  const value = decodeURIComponent(localePair.split('=')[1] ?? '').toLowerCase();
+  return SUPPORTED_LOCALES.has(value) ? value : null;
+}
+
+function getLocaleFromAcceptLanguage(req: Request): string {
+  const header = req.headers['accept-language'];
+  if (!header) {
+    return DEFAULT_LOCALE;
+  }
+
+  const value = Array.isArray(header) ? header.join(',') : header;
+  const normalized = value.toLowerCase();
+  if (normalized.includes('pl')) {
+    return 'pl';
+  }
+
+  return DEFAULT_LOCALE;
+}
+
+function resolvePreferredLocale(req: Request): string {
+  return getLocaleFromCookie(req) ?? getLocaleFromAcceptLanguage(req);
+}
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -46,6 +85,42 @@ app.use((req, res, next) => {
 });
 
 /**
+app.use(express.json());
+
+app.get('/api/locale', (req, res) => {
+  res.json({ locale: resolvePreferredLocale(req) });
+});
+
+app.post('/api/locale', (req, res) => {
+  const requestedLocale = typeof req.body?.locale === 'string' ? req.body.locale.toLowerCase() : '';
+
+  if (!SUPPORTED_LOCALES.has(requestedLocale)) {
+    res.status(400).json({ error: 'Unsupported locale' });
+    return;
+  }
+
+  res.cookie(LOCALE_COOKIE_NAME, requestedLocale, {
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+  });
+
+  res.status(204).send();
+});
+
+// Redirect only root path to locale-specific base path.
+app.get('/', (req, res, next) => {
+  if (req.path !== '/') {
+    next();
+    return;
+  }
+
+  const preferredLocale = resolvePreferredLocale(req);
+  const targetPath = preferredLocale === 'pl' ? '/pl' : '/en';
+  res.redirect(302, targetPath);
+});
+
  * Start the server if this module is the main entry point, or it is ran via PM2.
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */

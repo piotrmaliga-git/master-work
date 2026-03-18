@@ -2,6 +2,7 @@ import { DebugElement, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { HeaderComponent } from '../../components/header/header.component';
+import { LocaleService } from '../../services/locale.service';
 
 describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>;
@@ -28,8 +29,13 @@ describe('HeaderComponent', () => {
   };
 
   beforeEach(async () => {
+    const localeServiceMock = {
+      setPreferredLocale: vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
+      providers: [{ provide: LocaleService, useValue: localeServiceMock }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
@@ -96,6 +102,7 @@ describe('HeaderComponent behavior', () => {
     search?: string;
     hash?: string;
     lang?: string;
+    setPreferredLocale?: ReturnType<typeof vi.fn>;
   }) => {
     const assign = vi.fn();
     const location = {
@@ -119,8 +126,13 @@ describe('HeaderComponent behavior', () => {
       toggleDarkMode: vi.fn(),
     };
 
+    const localeServiceMock = {
+      setPreferredLocale: options?.setPreferredLocale ?? vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
+      providers: [{ provide: LocaleService, useValue: localeServiceMock }],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(HeaderComponent);
@@ -129,6 +141,7 @@ describe('HeaderComponent behavior', () => {
     component.document = documentMock;
     component.platformId = options?.platformId ?? 'browser';
     component.theme = themeMock;
+    component.localeService = localeServiceMock;
 
     fixture.detectChanges();
 
@@ -137,6 +150,7 @@ describe('HeaderComponent behavior', () => {
       assign,
       themeMock,
       documentMock,
+      localeServiceMock,
     };
   };
 
@@ -153,48 +167,75 @@ describe('HeaderComponent behavior', () => {
   });
 
   it('should redirect to /pl prefix when current locale is not polish', async () => {
-    const { component, assign } = await createFixture({
-      pathname: '/offers',
+    const { component, assign, localeServiceMock } = await createFixture({
+      pathname: '/en/offers',
       search: '?page=2',
       hash: '#top',
       lang: 'en',
     });
 
-    component.toggleLanguage();
+    await component.toggleLanguage();
 
+    expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('pl');
     expect(assign).toHaveBeenCalledWith('/pl/offers?page=2#top');
   });
 
   it('should remove /pl prefix when current locale is polish', async () => {
-    const { component, assign } = await createFixture({
+    const { component, assign, localeServiceMock } = await createFixture({
       pathname: '/pl/offers',
       search: '?page=1',
       hash: '#section',
     });
 
-    component.toggleLanguage();
+    await component.toggleLanguage();
 
-    expect(assign).toHaveBeenCalledWith('/offers?page=1#section');
+    expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('en');
+    expect(assign).toHaveBeenCalledWith('/en/offers?page=1#section');
   });
 
   it('should not redirect on server platform', async () => {
-    const { component, assign } = await createFixture({
+    const { component, assign, localeServiceMock } = await createFixture({
       platformId: 'server',
       pathname: '/offers',
     });
 
-    component.toggleLanguage();
+    await component.toggleLanguage();
 
+    expect(localeServiceMock.setPreferredLocale).not.toHaveBeenCalled();
     expect(assign).not.toHaveBeenCalled();
   });
 
   it('should not redirect when location is unavailable', async () => {
-    const { component, documentMock } = await createFixture();
+    const { component, documentMock, localeServiceMock } = await createFixture();
     (documentMock as any).defaultView = {};
 
-    component.toggleLanguage();
+    await component.toggleLanguage();
 
+    expect(localeServiceMock.setPreferredLocale).not.toHaveBeenCalled();
     expect(true).toBe(true);
+  });
+
+  it('should still redirect when locale persistence fails', async () => {
+    const { component, assign } = await createFixture({
+      pathname: '/en/offers',
+      setPreferredLocale: vi.fn().mockRejectedValue(new Error('network error')),
+    });
+
+    await component.toggleLanguage();
+
+    expect(assign).toHaveBeenCalledWith('/pl/offers');
+  });
+
+  it('should keep legacy non-prefixed english path when switching from pl is not involved', async () => {
+    const { component, assign, localeServiceMock } = await createFixture({
+      pathname: '/offers',
+      lang: 'en',
+    });
+
+    await component.toggleLanguage();
+
+    expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('pl');
+    expect(assign).toHaveBeenCalledWith('/pl/offers');
   });
 
   it('should toggle theme by negating current state', async () => {
