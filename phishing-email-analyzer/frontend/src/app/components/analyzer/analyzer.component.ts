@@ -12,7 +12,6 @@ import { analyzerTranslations } from '../../utils/translations/translations';
 
 @Component({
   selector: 'analyzer',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,

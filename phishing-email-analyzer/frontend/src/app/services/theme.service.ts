@@ -43,8 +43,8 @@ export class ThemeService {
       return false;
     }
 
-    if (typeof window.matchMedia === 'function') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (typeof globalThis.matchMedia === 'function') {
+      return globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
     }
 
     return false;

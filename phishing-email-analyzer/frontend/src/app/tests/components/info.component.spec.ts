@@ -1,8 +1,16 @@
+import { DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { InfoComponent } from '../../components/info/info.component';
 
 describe('InfoComponent', () => {
   let fixture: ComponentFixture<InfoComponent>;
+
+  const util = {
+    infoCard(): DebugElement {
+      return fixture.debugElement.query(By.css('[data-testid="info-card"]'));
+    },
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -18,11 +26,11 @@ describe('InfoComponent', () => {
   });
 
   it('should render available models section', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
+    const cardText = (util.infoCard().nativeElement as HTMLElement).textContent;
 
-    expect(compiled.textContent).toContain('Available Models');
-    expect(compiled.textContent).toContain('GPT-4.1:');
-    expect(compiled.textContent).toContain('Latest OpenAI model');
-    expect(compiled.textContent).toContain('Bielik 2 (4-bit)');
+    expect(cardText).toContain('Available Models');
+    expect(cardText).toContain('GPT-4.1:');
+    expect(cardText).toContain('Latest OpenAI model');
+    expect(cardText).toContain('Bielik 2 (4-bit)');
   });
 });

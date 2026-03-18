@@ -1,8 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('FooterComponent', () => {
   let fixture: ComponentFixture<FooterComponent>;
+
+  const util = {
+    copyrightText(): DebugElement {
+      return fixture.debugElement.query(By.css(`[data-testid="footer-copyright"]`));
+    },
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -18,7 +26,9 @@ describe('FooterComponent', () => {
   });
 
   it('should render copyright text', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('© 2026 Phishing Email Analyzer. All rights reserved.');
+    expect(util.copyrightText()).toBeTruthy();
+    expect(util.copyrightText().nativeElement.textContent?.trim()).toBe(
+      '© 2026 Phishing Email Analyzer. All rights reserved.'
+    );
   });
 });

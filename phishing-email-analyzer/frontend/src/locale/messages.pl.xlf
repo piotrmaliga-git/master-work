@@ -109,6 +109,18 @@
         <target>Przelacz na tryb ciemny</target>
       </segment>
     </unit>
+    <unit id="header.switchToEnglish">
+      <segment>
+        <source>Switch to English</source>
+        <target>Przelacz na jezyk angielski</target>
+      </segment>
+    </unit>
+    <unit id="header.switchToPolish">
+      <segment>
+        <source>Switch to Polish</source>
+        <target>Przelacz na jezyk polski</target>
+      </segment>
+    </unit>
     <unit id="info.cardHeader">
       <segment>
         <source>Available Models</source>

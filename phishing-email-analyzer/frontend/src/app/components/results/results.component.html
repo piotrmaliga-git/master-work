@@ -1,6 +1,9 @@
-@if (result(); as res) {
+@let res = result();
+
+@if (res) {
   <div class="results-wrapper">
     <p-card
+      data-testid="results-card"
       i18n-header="results|Results card title@@results.cardHeader"
       header="Analysis Result"
       styleClass="results-card"
@@ -20,6 +23,7 @@
       <div class="result-row">
         <span i18n="results|Label for classification result@@results.prediction">Prediction</span>
         <p-tag
+          data-testid="prediction-tag"
           [value]="res.prediction | uppercase"
           [severity]="res.prediction === 'phishing' ? 'danger' : 'success'"
         />

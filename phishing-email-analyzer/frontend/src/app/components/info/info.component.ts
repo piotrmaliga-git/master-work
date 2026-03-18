@@ -5,7 +5,6 @@ import { infoTranslations } from '../../utils/translations/translations';
 
 @Component({
   selector: 'info',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, CardModule],
   templateUrl: './info.component.html',

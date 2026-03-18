@@ -4,7 +4,6 @@ import { pipesTranslations } from '../utils/translations/translations';
 
 @Pipe({
   name: 'formatReason',
-  standalone: true,
 })
 export class FormatReasonPipe implements PipeTransform {
   private readonly sanitizer = inject(DomSanitizer);

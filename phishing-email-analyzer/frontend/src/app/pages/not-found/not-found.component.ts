@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'not-found-page',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   template: `<div class="w-full h-full flex flex-col items-center justify-center py-24">
@@ -15,6 +14,7 @@ import { RouterLink } from '@angular/router';
       Page not found.
     </p>
     <a
+      data-testid="not-found-home-link"
       routerLink="/"
       class="text-blue-600 hover:underline"
       i18n="notFound|CTA link text to return home@@notFound.goHome"

@@ -21,6 +21,10 @@ describe('ApiService', () => {
     httpMock.verify();
   });
 
+  it('should create the service', () => {
+    expect(service).toBeTruthy();
+  });
+
   it('should call /analyze endpoint with request payload', () => {
     const requestBody: EmailRequest = {
       email_text: 'Test email body',

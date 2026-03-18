@@ -19,21 +19,21 @@ const comments = [
 
 @Component({
   selector: 'home-page',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [...comments],
   template: `<div class="app-shell">
-    <page-header />
+    <page-header data-testid="home-header" />
     <main class="app-content">
       <analyzer
+        data-testid="home-analyzer"
         [loading]="loading()"
         [externalError]="error()"
         (analyzeRequest)="onAnalyzeRequest($event)"
       ></analyzer>
-      <results [result]="result()"></results>
-      <info />
+      <results data-testid="home-results" [result]="result()"></results>
+      <info data-testid="home-info" />
     </main>
-    <page-footer />
+    <page-footer data-testid="home-footer" />
   </div>`,
 })
 export class HomePageComponent {

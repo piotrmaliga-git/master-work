@@ -1,27 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { setEmailText } from '../helpers/analyzer-form.helper';
 
-const setEmailText = async (page: import('@playwright/test').Page, text: string) => {
-  const textarea = page.locator('#email-input');
-  const analyzeButton = page.getByRole('button', { name: /Analyze/i });
-
-  await textarea.fill(text);
-
-  if (await analyzeButton.isDisabled()) {
-    await page.evaluate((value) => {
-      const el = document.querySelector<HTMLTextAreaElement>('#email-input');
-      if (!el) {
-        return;
-      }
-      el.value = value;
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-    }, text);
-  }
-
-  await expect(analyzeButton).toBeEnabled();
-};
-
-test.describe('Phishing analyzer e2e', () => {
+test.describe('Analyzer core flow e2e', () => {
   test('clear button resets form fields', async ({ page }) => {
     await page.goto('/');
 
@@ -91,18 +71,5 @@ test.describe('Phishing analyzer e2e', () => {
 
     await expect(page.getByText('Backend unavailable for test')).toBeVisible();
     await expect(page.locator('.results-wrapper')).toHaveCount(0);
-  });
-
-  test('navigating to unknown route shows not found page and allows return home', async ({
-    page,
-  }) => {
-    await page.goto('/not-existing-route');
-
-    await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
-    await expect(page.getByText('Page not found.')).toBeVisible();
-
-    await page.getByRole('link', { name: 'Go back to home' }).click();
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole('heading', { level: 1, name: /Phishing Email/i })).toBeVisible();
   });
 });
