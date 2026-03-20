@@ -5,6 +5,7 @@ const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const globals = require('globals');
 const eslintConfigPrettier = require('eslint-config-prettier');
+/** @type {any} */
 const preferProtectedTemplateMembersRule = require('./tools/local-eslint-rules/prefer-protected-template-members/prefer-protected-template-members');
 
 module.exports = defineConfig([
