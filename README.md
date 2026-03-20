@@ -1,50 +1,68 @@
 # Phishing Email Analyzer + praca magisterska
 
-Repozytorium zawiera kompletny projekt inżyniersko-badawczy dotyczący wykrywania phishingu w wiadomościach e-mail.
-Obejmuje część aplikacyjną (backend FastAPI + frontend Angular), która pozwala analizować treść wiadomości i porównywać predykcje wielu modeli LLM, a także część naukową z materiałami do pracy magisterskiej przygotowanymi w LaTeX.
-Projekt umożliwia zarówno praktyczne testowanie scenariuszy bezpieczeństwa (analiza pojedynczych wiadomości), jak i eksperymenty porównawcze na zbiorze danych oraz generowanie raportów z wynikami modeli.
+Repozytorium zawiera kompletny projekt badawczo-aplikacyjny dotyczący wykrywania phishingu w wiadomościach e-mail. Składa się z:
+
+- aplikacji webowej do analizy wiadomości i porównywania odpowiedzi modeli LLM,
+- backendu FastAPI udostępniającego API klasyfikacji,
+- danych eksperymentalnych i raportów z uruchomień modeli,
+- materiałów do pracy magisterskiej przygotowanych w LaTeX.
+
+Projekt pozwala zarówno uruchomić lokalnie aplikację do analizy pojedynczych wiadomości, jak i wykonywać eksperymenty porównawcze na przygotowanym zbiorze danych.
 
 ## Spis treści
 
-- [Phishing Email Analyzer + praca magisterska](#phishing-email-analyzer--praca-magisterska)
-  - [Spis treści](#spis-treści)
-  - [Zawartość repozytorium](#zawartość-repozytorium)
-  - [Wymagania](#wymagania)
-  - [Szybki start (Windows / PowerShell)](#szybki-start-windows--powershell)
-    - [1) Backend](#1-backend)
-    - [2) Frontend](#2-frontend)
-  - [Konfiguracja `.env` (backend)](#konfiguracja-env-backend)
-  - [Architektura aplikacji](#architektura-aplikacji)
-  - [API backendu](#api-backendu)
-    - [`GET /`](#get-)
-    - [`POST /analyze`](#post-analyze)
-  - [Modele użyte w projekcie](#modele-użyte-w-projekcie)
-  - [Aktualny status i ograniczenia](#aktualny-status-i-ograniczenia)
-  - [Testowanie i skrypty](#testowanie-i-skrypty)
-    - [Backend: porównanie modeli](#backend-porównanie-modeli)
-    - [Backend: przygotowanie danych](#backend-przygotowanie-danych)
-    - [Frontend: testy i jakość](#frontend-testy-i-jakość)
-    - [Frontend: E2E Playwright](#frontend-e2e-playwright)
-  - [Format danych wejściowych (`data/data.json`)](#format-danych-wejściowych-datadatajson)
-  - [Raporty](#raporty)
-  - [Zrzuty ekranu aplikacji](#zrzuty-ekranu-aplikacji)
-    - [Ekran główny](#ekran-główny)
-    - [Wynik analizy](#wynik-analizy)
-    - [Widok mobilny (opcjonalnie)](#widok-mobilny-opcjonalnie)
-  - [Część pracy magisterskiej](#część-pracy-magisterskiej)
-  - [Wskazówki operacyjne](#wskazówki-operacyjne)
+- [Opis repozytorium](#opis-repozytorium)
+- [Struktura projektu](#struktura-projektu)
+- [Wymagania](#wymagania)
+- [Szybki start](#szybki-start)
+- [Konfiguracja backendu](#konfiguracja-backendu)
+- [Architektura](#architektura)
+- [API](#api)
+- [Modele](#modele)
+- [Frontend: uruchamianie i jakość](#frontend-uruchamianie-i-jakość)
+- [Backend: skrypty pomocnicze](#backend-skrypty-pomocnicze)
+- [CI i hooki Git](#ci-i-hooki-git)
+- [Dane i raporty](#dane-i-raporty)
+- [Część pracy magisterskiej](#część-pracy-magisterskiej)
+- [Aktualne ograniczenia](#aktualne-ograniczenia)
 
-## Zawartość repozytorium
+## Opis repozytorium
 
-```
+Najważniejszym elementem projektu jest aplikacja Phishing Email Analyzer:
+
+- backend odpowiada za ładowanie modeli i klasyfikację wiadomości,
+- frontend udostępnia interfejs użytkownika, routing, testy i internacjonalizację,
+- katalog `data/` zawiera dane wejściowe do eksperymentów,
+- katalog `reports/` przechowuje wyniki uruchomień modeli,
+- katalog `graduate work/` zawiera część pisaną i materiały pomocnicze do pracy.
+
+## Struktura projektu
+
+```text
 .
-|-- phishing-email-analyzer/
-|   |-- backend/              # API FastAPI, integracje modeli, skrypty testowe
-|   `-- frontend/             # aplikacja Angular (UI + testy)
+|-- .github/
+|   `-- workflows/                    # workflowy CI
+|-- .husky/                           # hooki Git
 |-- data/
-|   `-- data.json             # zbiór wiadomości do testów
-|-- reports/                  # raporty JSON z uruchomień modeli
-`-- forma_pisemna/            # LaTeX: treść pracy, bibliografia, grafiki
+|   `-- data.json                     # zbiór wiadomości do testów
+|-- graduate work/                    # LaTeX + materiały do pracy
+|   |-- main.tex
+|   |-- bibliografia.bib
+|   |-- images/
+|   `-- presentation/
+|-- phishing-email-analyzer/
+|   |-- backend/                      # FastAPI, adaptery modeli, skrypty badawcze
+|   |   |-- main.py
+|   |   |-- test_all_models.py
+|   |   |-- shuffle_data.py
+|   |   `-- models/
+|   `-- frontend/                     # Angular 21, testy, Playwright, linting
+|       |-- src/
+|       |-- e2e/
+|       |-- package.json
+|       `-- eslint.config.js
+|-- reports/                          # raporty JSON z uruchomień modeli
+`-- README.md
 ```
 
 ## Wymagania
@@ -52,11 +70,11 @@ Projekt umożliwia zarówno praktyczne testowanie scenariuszy bezpieczeństwa (a
 - Python 3.13+
 - Node.js 20+
 - npm 11+
-- (opcjonalnie) CUDA GPU dla lokalnych modeli HF/Bielik
+- opcjonalnie GPU/CUDA dla cięższych modeli lokalnych
 
-## Szybki start (Windows / PowerShell)
+## Szybki start
 
-### 1) Backend
+### 1. Backend
 
 ```powershell
 cd "phishing-email-analyzer/backend"
@@ -64,11 +82,11 @@ py -3.13 -m pip install -r requirements.txt
 uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Backend będzie dostępny pod adresem `http://localhost:8000`.
+Backend będzie dostępny pod adresem `http://127.0.0.1:8000`.
 
-### 2) Frontend
+### 2. Frontend
 
-W nowym terminalu:
+W drugim terminalu:
 
 ```powershell
 cd "phishing-email-analyzer/frontend"
@@ -76,11 +94,17 @@ npm install
 npm start
 ```
 
-Frontend działa domyślnie na `http://localhost:4200` i komunikuje się z backendem pod `http://localhost:8000`.
+Domyślnie `npm start` uruchamia angielską konfigurację aplikacji na `http://localhost:4200`.
 
-## Konfiguracja `.env` (backend)
+Wersję polską można uruchomić poleceniem:
 
-W katalogu `phishing-email-analyzer/backend` utwórz plik `.env` z kluczami tylko dla modeli, których chcesz używać.
+```powershell
+npm run start:pl
+```
+
+## Konfiguracja backendu
+
+W katalogu `phishing-email-analyzer/backend` utwórz plik `.env` i dodaj tylko te klucze, które są potrzebne do modeli używanych lokalnie.
 
 ```env
 OPENAI_API_KEY=...
@@ -97,26 +121,37 @@ LLAMA_CLASSIFY_RETRY_SLEEP_SEC=1.5
 
 Mapowanie kluczy:
 
-| Zmienna | Wykorzystanie |
+| Zmienna | Model / wykorzystanie |
 |---|---|
 | `OPENAI_API_KEY` | `gpt-4.1` |
 | `GOOGLE_API_KEY` | `gemini-2.5-pro` |
 | `LLAMA_API_KEY` | `llama-cloud` |
-| `HF_TOKEN` | `mistral-7b` oraz lokalne modele z Hugging Face |
+| `HF_TOKEN` | `mistral-7b` i modele lokalne Hugging Face |
 
-## Architektura aplikacji
+## Architektura
 
-- Backend (`backend/main.py`) udostępnia endpoint `POST /analyze`.
-- Backend dynamicznie ładuje adaptery modeli z `backend/models`.
-- Frontend (`frontend/src/app`) wysyła payload do backendu przez `ApiService`.
-- Dane testowe są trzymane w `data/data.json`.
-- Raporty z porównań modeli trafiają do `reports/*.json`.
+- `phishing-email-analyzer/backend/main.py` dynamicznie ładuje adaptery modeli z katalogu `backend/models/`.
+- `phishing-email-analyzer/backend/main.py` udostępnia endpointy `GET /` oraz `POST /analyze`.
+- `phishing-email-analyzer/frontend/src/app/` zawiera aplikację Angular 21 opartą o standalone components.
+- Routing frontendu obsługuje ścieżki `/`, `/pl` i `/en`.
+- Pliki tłumaczeń Angulara znajdują się w `phishing-email-analyzer/frontend/src/locale/`.
+- Dane testowe są przechowywane w `data/data.json`, a raporty trafiają do `reports/*.json`.
 
-## API backendu
+## API
 
 ### `GET /`
 
-Zwraca podstawowe informacje i listę dostępnych modeli.
+Zwraca podstawowe informacje o API, listę poprawnie załadowanych modeli oraz błędy modeli, które nie uruchomiły się podczas startu backendu.
+
+Przykładowa odpowiedź:
+
+```json
+{
+  "message": "Phishing Detection API",
+  "available_models": ["gpt-4.1", "mistral-7b", "llama-cloud", "gemini-2.5-pro"],
+  "model_load_errors": {}
+}
+```
 
 ### `POST /analyze`
 
@@ -124,10 +159,10 @@ Przykładowe żądanie:
 
 ```json
 {
-  "email_text": "Treść maila...",
+  "email_text": "Treść wiadomości e-mail...",
   "model_name": "gpt-4.1",
   "sender": "Bank <no-reply@bank.pl>",
-  "title": "Potwierdź dane"
+  "title": "Potwierdź swoje dane"
 }
 ```
 
@@ -141,78 +176,72 @@ Przykładowa odpowiedź:
   "timestamp": "2026-03-11T22:17:38.123456",
   "response_time_ms": 842.31,
   "sender": "Bank <no-reply@bank.pl>",
-  "title": "Potwierdź dane"
+  "title": "Potwierdź swoje dane"
 }
 ```
 
-Dozwolone etykiety klasyfikacji: `phishing` oraz `legit`.
+Obsługiwane etykiety klasyfikacji to `phishing` oraz `legit`.
 
-## Modele użyte w projekcie
+## Modele
 
-| Model ID | Krótki opis |
+| Model ID | Opis |
 |---|---|
-| `gpt-4.1` | Model OpenAI używany jako mocny punkt odniesienia jakościowego; zwykle daje najbardziej rozbudowane uzasadnienia decyzji. |
-| `gemini-2.5-pro` | Model Google do klasyfikacji i uzasadniania decyzji; dobry do porównań z GPT w podobnym scenariuszu promptowania. |
-| `mistral-7b` | Otwarty model uruchamiany lokalnie przez `transformers`; pozwala testować wariant bez usług chmurowych kosztem większych wymagań sprzętowych. |
-| `llama-cloud` | Klasyfikacja realizowana przez usługę Llama Cloud na podstawie reguł `phishing`/`legit`; wygodna integracja API z kontrolą timeoutów. |
-| `bielik-2-4bit` | Planowany wariant lokalny (Bielik 11B v2.2 w 4-bit), istotny w kontekście modeli polskojęzycznych; obecnie adapter nie jest jeszcze dodany do repozytorium. |
+| `gpt-4.1` | Model OpenAI wykorzystywany jako punkt odniesienia jakościowego. |
+| `gemini-2.5-pro` | Model Google używany do klasyfikacji i uzasadnień. |
+| `mistral-7b` | Model open-source uruchamiany lokalnie przez `transformers`. |
+| `llama-cloud` | Model dostępny przez usługę Llama Cloud. |
+| `bielik-2-4bit` | Opcjonalny wariant lokalny, ładowany tylko wtedy, gdy adapter istnieje w repozytorium. |
 
-## Aktualny status i ograniczenia
+## Frontend: uruchamianie i jakość
 
-- `backend/main.py` oraz `backend/test_all_models.py` odwołują się do pliku `backend/models/bielik2_4bit.py`, którego obecnie nie ma w repozytorium.
-- W praktyce oznacza to, że uruchomienie backendu i skryptu testowego wymaga:
-  1. dodania brakującego adaptera `bielik2_4bit.py`, albo
-  2. tymczasowego wyłączenia obsługi modelu `bielik-2-4bit` w kodzie.
-- Lokalny inference dużych modeli (`mistral-7b`, Bielik) bez GPU może być bardzo wolny lub niestabilny.
+W katalogu `phishing-email-analyzer/frontend` dostępne są najważniejsze komendy:
 
-## Testowanie i skrypty
-
-### Backend: porównanie modeli
+### Uruchamianie i build
 
 ```powershell
-cd "phishing-email-analyzer/backend"
-
-# domyślnie: 10 próbek, wszystkie modele
-py -3.13 test_all_models.py
-
-# wybrane modele
-py -3.13 test_all_models.py --models gpt-4.1,gemini-2.5-pro,llama-cloud
-
-# liczba próbek + seed
-py -3.13 test_all_models.py --samples 50 --seed 7
+npm start
+npm run start:pl
+npm run build
+npm run build:pl
+npm run watch
 ```
 
-### Backend: przygotowanie danych
+### Tłumaczenia
 
 ```powershell
-cd "phishing-email-analyzer/backend"
-
-# domyślnie: tasowanie + renumeracja
-py -3.13 shuffle_data.py
-
-# tylko tasowanie
-py -3.13 shuffle_data.py --shuffle
-
-# tylko renumeracja
-py -3.13 shuffle_data.py --renumber
+npm run extract-i18n
 ```
 
-### Frontend: testy i jakość
+Polecenie generuje plik źródłowy tłumaczeń XLF w katalogu `src/locale/`.
+
+### Testy
 
 ```powershell
-cd "phishing-email-analyzer/frontend"
-
 npm test
 npm run test:ci
 npm run test:coverage
-npm run lint
-npm run format
 ```
 
-### Frontend: E2E Playwright
+### Jakość kodu
 
 ```powershell
-cd "phishing-email-analyzer/frontend"
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
+```
+
+Frontend używa:
+
+- ESLint 9 w flat config (`eslint.config.js`),
+- `angular-eslint` dla Angular 21,
+- Prettiera do formatowania,
+- Playwright do testów E2E,
+- Vitest i Angular test runner do testów jednostkowych.
+
+### E2E Playwright
+
+```powershell
 npx playwright install
 npm run e2e
 npm run e2e:ui
@@ -220,55 +249,76 @@ npm run e2e:headed
 npm run e2e:report
 ```
 
-## Format danych wejściowych (`data/data.json`)
+## Backend: skrypty pomocnicze
 
-Każdy rekord powinien zawierać pola:
+### Porównanie modeli
 
-- `id` (int)
-- `title` (string)
-- `sender` (string)
-- `text` (string)
+```powershell
+cd "phishing-email-analyzer/backend"
+
+py -3.13 test_all_models.py
+py -3.13 test_all_models.py --models gpt-4.1,gemini-2.5-pro,llama-cloud
+py -3.13 test_all_models.py --samples 50 --seed 7
+```
+
+### Mieszanie i porządkowanie danych
+
+```powershell
+cd "phishing-email-analyzer/backend"
+
+py -3.13 shuffle_data.py
+py -3.13 shuffle_data.py --shuffle
+py -3.13 shuffle_data.py --renumber
+```
+
+## CI i hooki Git
+
+Repozytorium zawiera lokalne i zdalne zabezpieczenia jakości kodu:
+
+- hook `.husky/pre-push` blokuje `git push`, jeśli nie przejdą komendy `build`, `format:check` albo `lint` dla frontendu,
+- workflow `.github/workflows/pr-frontend-ci.yml` uruchamia pipeline w kolejności:
+  1. `build`
+  2. `lint-format`
+  3. `check-translations`
+  4. `unit-tests`
+  5. `e2e-tests`
+
+## Dane i raporty
+
+### Format danych wejściowych
+
+Plik `data/data.json` przechowuje rekordy zawierające co najmniej:
+
+- `id`
+- `title`
+- `sender`
+- `text`
 - `ground_truth` (`phishing` lub `legit`)
-- `category` (string)
+- `category`
 
-## Raporty
+### Raporty
 
-Folder `reports/` przechowuje raporty JSON z uruchomień modeli (np. `gpt_4.1_report_*.json`, `mistral_report_*.json`, `bielik2_(4bit)_report_*.json`).
+Katalog `reports/` przechowuje raporty JSON z uruchomień modeli, na przykład:
 
-## Zrzuty ekranu aplikacji
-
-Poniżej wstaw zrzuty ekranu frontendu, aby pokazać czytelnikowi jak wygląda aplikacja.
-Najwygodniej trzymać pliki w katalogu `forma_pisemna/images/` albo `phishing-email-analyzer/frontend/public/`.
-
-### Ekran główny
-
-Krótki opis: widok formularza do analizy wiadomości (pole treści, wybór modelu, przycisk analizy).
-
-![Ekran główny aplikacji](forma_pisemna/images/frontend-home.png)
-
-### Wynik analizy
-
-Krótki opis: przykład wyniku klasyfikacji (`phishing`/`legit`), uzasadnienie modelu i czas odpowiedzi.
-
-![Wynik analizy wiadomości](forma_pisemna/images/frontend-result.png)
-
-### Widok mobilny (opcjonalnie)
-
-Krótki opis: responsywność interfejsu na mniejszych ekranach.
-
-![Widok mobilny aplikacji](forma_pisemna/images/frontend-mobile.png)
+- `gpt_4.1_report_*.json`
+- `gemini_2.5-pro_report_*.json`
+- `llama_cloud_report_*.json`
+- `mistral_report_*.json`
+- `bielik2_(4bit)_report_*.json`
 
 ## Część pracy magisterskiej
 
-Dokument LaTeX znajduje się w `forma_pisemna/`:
+Materiały tekstowe i prezentacyjne znajdują się w katalogu `graduate work/`:
 
-- `main.tex` - główny plik dokumentu
-- `claims_page.tex`, `title_page.tex`, `settings.tex`
-- `bibliografia.bib`
-- `images/`
+- `main.tex` - główny plik dokumentu,
+- `title_page.tex`, `claims_page.tex`, `settings.tex`,
+- `bibliografia.bib`,
+- `images/`,
+- `presentation/`.
 
-## Wskazówki operacyjne
+## Aktualne ograniczenia
 
-- Najpierw uruchom backend, potem frontend.
-- Jeśli frontend nie łączy się z API, sprawdź czy backend działa na `127.0.0.1:8000`.
-- Jeśli model zwraca błąd, najpierw zweryfikuj odpowiedni klucz API w `.env`.
+- Adapter `bielik-2-4bit` jest opcjonalny i backend ładuje go tylko wtedy, gdy plik `backend/models/bielik2_4bit.py` faktycznie istnieje.
+- Modele lokalne oparte o `transformers` mogą działać wolno bez GPU.
+- Backend zwraca błędy ładowania modeli przez pole `model_load_errors`, więc częściowa niedostępność modeli nie blokuje startu całej aplikacji.
+- Do pełnego przejścia lokalnych testów E2E potrzebne są zainstalowane przeglądarki Playwright.
