@@ -57,6 +57,14 @@ def load_samples(n: int) -> list[dict]:
     return data[:n]
 
 
+def get_result_status(correct: bool, prediction: str) -> str:
+    if correct:
+        return "✓"
+    if prediction.startswith("error"):
+        return "!"
+    return "✗"
+
+
 def run_model(name: str, classify_fn, samples: list[dict]) -> dict:
     results = []
     for sample in samples:
@@ -77,7 +85,7 @@ def run_model(name: str, classify_fn, samples: list[dict]) -> dict:
             "elapsed_ms": elapsed_ms,
         })
 
-        status = "✓" if correct else ("!" if prediction.startswith("error") else "✗")
+        status = get_result_status(correct, prediction)
         print(f"  [{status}] id={sample['id']:>4}  gt={sample.get('ground_truth','?'):<8}  pred={prediction:<8}  {elapsed_ms:.0f}ms")
 
     correct_count = sum(r["correct"] for r in results)

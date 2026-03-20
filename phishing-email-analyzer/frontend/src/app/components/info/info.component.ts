@@ -10,7 +10,7 @@ import { infoTranslations } from '../../utils/translations/translations';
   templateUrl: './info.component.html',
 })
 export class InfoComponent {
-  readonly models = computed(() => [
+  protected readonly models = computed(() => [
     {
       name: 'GPT-4.1',
       description: infoTranslations['gpt41Description'],

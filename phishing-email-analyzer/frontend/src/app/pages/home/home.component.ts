@@ -44,7 +44,7 @@ export class HomePageComponent {
 
   constructor(private readonly api: ApiService) {}
 
-  async onAnalyzeRequest(payload: {
+  protected async onAnalyzeRequest(payload: {
     emailText: string;
     selectedModel: AiModelId;
     sender: string;

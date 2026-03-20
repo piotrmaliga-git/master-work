@@ -83,15 +83,13 @@ describe('HeaderComponent', () => {
     expect(util.sunIcon()).toBeTruthy();
   });
 
-  it('should invoke toggle handlers when header buttons are clicked', () => {
-    const languageSpy = vi.spyOn(fixture.componentInstance, 'toggleLanguage');
-    const themeSpy = vi.spyOn(fixture.componentInstance, 'toggleTheme');
-
-    (util.languageToggleButton().nativeElement as HTMLButtonElement).click();
+  it('should update icon state when theme button is clicked', () => {
     (util.themeToggleButton().nativeElement as HTMLButtonElement).click();
+    fixture.detectChanges();
 
-    expect(languageSpy).toHaveBeenCalledTimes(1);
-    expect(themeSpy).toHaveBeenCalledTimes(1);
+    const button = util.themeToggleButton().nativeElement as HTMLButtonElement;
+    expect(button.getAttribute('aria-label')).toBe('Switch to light mode');
+    expect(util.sunIcon()).toBeTruthy();
   });
 });
 
@@ -146,6 +144,7 @@ describe('HeaderComponent behavior', () => {
     fixture.detectChanges();
 
     return {
+      fixture,
       component: component as HeaderComponent,
       assign,
       themeMock,
@@ -167,85 +166,124 @@ describe('HeaderComponent behavior', () => {
   });
 
   it('should redirect to /pl prefix when current locale is not polish', async () => {
-    const { component, assign, localeServiceMock } = await createFixture({
+    const { fixture, assign, localeServiceMock } = await createFixture({
       pathname: '/en/offers',
       search: '?page=2',
       hash: '#top',
       lang: 'en',
     });
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('pl');
     expect(assign).toHaveBeenCalledWith('/pl/offers?page=2#top');
   });
 
   it('should remove /pl prefix when current locale is polish', async () => {
-    const { component, assign, localeServiceMock } = await createFixture({
+    const { fixture, assign, localeServiceMock } = await createFixture({
       pathname: '/pl/offers',
       search: '?page=1',
       hash: '#section',
     });
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('en');
     expect(assign).toHaveBeenCalledWith('/en/offers?page=1#section');
   });
 
+  it('should redirect /pl root path to /en when switching from polish', async () => {
+    const { fixture, assign, localeServiceMock } = await createFixture({
+      pathname: '/pl',
+      search: '?tab=home',
+      hash: '#hero',
+    });
+
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
+
+    expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('en');
+    expect(assign).toHaveBeenCalledWith('/en?tab=home#hero');
+  });
+
   it('should not redirect on server platform', async () => {
-    const { component, assign, localeServiceMock } = await createFixture({
+    const { fixture, assign, localeServiceMock } = await createFixture({
       platformId: 'server',
       pathname: '/offers',
     });
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).not.toHaveBeenCalled();
     expect(assign).not.toHaveBeenCalled();
   });
 
   it('should not redirect when location is unavailable', async () => {
-    const { component, documentMock, localeServiceMock } = await createFixture();
+    const { fixture, documentMock, localeServiceMock } = await createFixture();
     (documentMock as any).defaultView = {};
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).not.toHaveBeenCalled();
     expect(true).toBe(true);
   });
 
   it('should still redirect when locale persistence fails', async () => {
-    const { component, assign } = await createFixture({
+    const { fixture, assign } = await createFixture({
       pathname: '/en/offers',
       setPreferredLocale: vi.fn().mockRejectedValue(new Error('network error')),
     });
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(assign).toHaveBeenCalledWith('/pl/offers');
   });
 
   it('should keep legacy non-prefixed english path when switching from pl is not involved', async () => {
-    const { component, assign, localeServiceMock } = await createFixture({
+    const { fixture, assign, localeServiceMock } = await createFixture({
       pathname: '/offers',
       lang: 'en',
     });
 
-    await component.toggleLanguage();
+    (
+      fixture.nativeElement.querySelector('[data-testid="language-toggle"]') as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('pl');
     expect(assign).toHaveBeenCalledWith('/pl/offers');
   });
 
   it('should toggle theme by negating current state', async () => {
-    const { component, themeMock } = await createFixture();
+    const { fixture, themeMock } = await createFixture();
 
-    component.toggleTheme();
+    (
+      fixture.nativeElement.querySelector('[data-testid="theme-toggle"]') as HTMLButtonElement
+    ).click();
     expect(themeMock.toggleDarkMode).toHaveBeenCalledWith(true);
 
     themeMock.isDark.set(true);
-    component.toggleTheme();
+    fixture.detectChanges();
+    (
+      fixture.nativeElement.querySelector('[data-testid="theme-toggle"]') as HTMLButtonElement
+    ).click();
     expect(themeMock.toggleDarkMode).toHaveBeenCalledWith(false);
   });
 });
