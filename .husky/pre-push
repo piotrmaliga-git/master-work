@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -e
+
+echo "Running pre-push checks for frontend..."
+
+npm --prefix phishing-email-analyzer/frontend run build
+npm --prefix phishing-email-analyzer/frontend run format:check
+npm --prefix phishing-email-analyzer/frontend run lint
