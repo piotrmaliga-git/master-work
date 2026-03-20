@@ -40,11 +40,11 @@ export class AnalyzerComponent {
   selectedModel = signal<AiModelId>(AiModelId.GPT_4_1);
   internalError = signal<string>('');
 
-  readonly models = AI_MODEL_OPTIONS;
+  protected readonly models = AI_MODEL_OPTIONS;
 
-  readonly errorEmptyEmail = analyzerTranslations['errorEmptyEmail'];
+  protected readonly errorEmptyEmail = analyzerTranslations['errorEmptyEmail'];
 
-  onAnalyze() {
+  protected onAnalyze() {
     if (!this.emailText().trim()) {
       this.internalError.set(this.errorEmptyEmail);
       return;
@@ -57,7 +57,7 @@ export class AnalyzerComponent {
     });
   }
 
-  clear() {
+  protected clear() {
     this.emailText.set('');
     this.sender.set('');
     this.title.set('');

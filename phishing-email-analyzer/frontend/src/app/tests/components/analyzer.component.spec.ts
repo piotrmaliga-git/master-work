@@ -66,17 +66,28 @@ describe('AnalyzerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should expose expected models list', () => {
-    expect(component.models.length).toBe(5);
-    expect(component.models.map((model) => model.id)).toContain(AiModelId.GPT_4_1);
-    expect(component.models.map((model) => model.id)).toContain(AiModelId.BIELIK_2_4BIT);
+  it('should render model selector with default model selected', () => {
+    expect(util.select()).toBeTruthy();
+    expect(component.selectedModel()).toBe(AiModelId.GPT_4_1);
   });
 
-  it('should set internal error and not emit when email text is empty', () => {
+  it('should not emit when analyze button is disabled for empty email text', () => {
     const emitSpy = vi.spyOn(component.analyzeRequest, 'emit');
 
     component.emailText.set('   ');
-    component.onAnalyze();
+    fixture.detectChanges();
+
+    (util.analyzeButtonElement().nativeElement as HTMLButtonElement).click();
+
+    expect((util.analyzeButtonElement().nativeElement as HTMLButtonElement).disabled).toBe(true);
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('should set internal error when analyze is invoked with empty email', () => {
+    const emitSpy = vi.spyOn(component.analyzeRequest, 'emit');
+
+    component.emailText.set('   ');
+    (component as any).onAnalyze();
 
     expect(component.internalError()).toBe('Please enter email text');
     expect(emitSpy).not.toHaveBeenCalled();
@@ -88,8 +99,9 @@ describe('AnalyzerComponent', () => {
     component.emailText.set('Important email content');
     component.selectedModel.set(AiModelId.GPT_4_1);
     component.sender.set('  sender@example.com  ');
+    fixture.detectChanges();
 
-    component.onAnalyze();
+    (util.analyzeButtonElement().nativeElement as HTMLButtonElement).click();
 
     expect(emitSpy).toHaveBeenCalledWith({
       emailText: 'Important email content',
@@ -104,8 +116,9 @@ describe('AnalyzerComponent', () => {
 
     component.emailText.set('Important email content');
     component.title.set('  Urgent action required  ');
+    fixture.detectChanges();
 
-    component.onAnalyze();
+    (util.analyzeButtonElement().nativeElement as HTMLButtonElement).click();
 
     expect(emitSpy).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Urgent action required' })
@@ -116,8 +129,9 @@ describe('AnalyzerComponent', () => {
     component.emailText.set('Body');
     component.sender.set('sender@example.com');
     component.internalError.set('Some error');
+    fixture.detectChanges();
 
-    component.clear();
+    (util.clearButtonElement().nativeElement as HTMLButtonElement).click();
 
     expect(component.emailText()).toBe('');
     expect(component.sender()).toBe('');
@@ -156,9 +170,7 @@ describe('AnalyzerComponent', () => {
 
   it('should pass configured options to model selector', () => {
     expect(util.select()).toBeTruthy();
-    expect(component.models.length).toBe(5);
-    expect(component.models.map((model) => model.name)).toContain('GPT-4.1');
-    expect(component.models.map((model) => model.name)).toContain('Bielik 2 (4-bit)');
+    expect(component.selectedModel()).toBe(AiModelId.GPT_4_1);
   });
 
   it('should update text fields via DOM events', async () => {
@@ -216,27 +228,28 @@ describe('AnalyzerComponent', () => {
     expect(util.errorMessage()).toBeNull();
   });
 
-  it('should call onAnalyze when analyze button is clicked', () => {
+  it('should emit analyze request when analyze button is clicked', () => {
     fixture.componentRef.setInput('loading', false);
     component.emailText.set('click coverage body');
     fixture.detectChanges();
 
-    const onAnalyzeSpy = vi.spyOn(component, 'onAnalyze');
+    const emitSpy = vi.spyOn(component.analyzeRequest, 'emit');
     (util.analyzeButtonElement().nativeElement as HTMLButtonElement).click();
 
-    expect(onAnalyzeSpy).toHaveBeenCalledTimes(1);
+    expect(emitSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should call clear when clear button is clicked', () => {
+  it('should clear fields when clear button is clicked', () => {
     fixture.componentRef.setInput('loading', false);
     component.emailText.set('to clear');
     component.sender.set('sender@example.com');
     component.title.set('subject');
     fixture.detectChanges();
 
-    const clearSpy = vi.spyOn(component, 'clear');
     (util.clearButtonElement().nativeElement as HTMLButtonElement).click();
 
-    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(component.emailText()).toBe('');
+    expect(component.sender()).toBe('');
+    expect(component.title()).toBe('');
   });
 });

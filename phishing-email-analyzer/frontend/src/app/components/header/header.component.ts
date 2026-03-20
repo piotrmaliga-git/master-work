@@ -18,20 +18,20 @@ export class HeaderComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
 
-  readonly switchToLight = headerTranslations['switchToLight'];
-  readonly switchToDark = headerTranslations['switchToDark'];
-  readonly switchToEnglish = headerTranslations['switchToEnglish'];
-  readonly switchToPolish = headerTranslations['switchToPolish'];
+  protected readonly switchToLight = headerTranslations['switchToLight'];
+  protected readonly switchToDark = headerTranslations['switchToDark'];
+  protected readonly switchToEnglish = headerTranslations['switchToEnglish'];
+  protected readonly switchToPolish = headerTranslations['switchToPolish'];
 
   isPolishLocale(): boolean {
     const lang = this.document.documentElement.lang || '';
     if (lang.startsWith('pl')) return true;
 
-    const path = this.document.defaultView?.location.pathname || '';
+    const path = this.document.defaultView?.location?.pathname || '';
     return path === '/pl' || path.startsWith('/pl/');
   }
 
-  async toggleLanguage(): Promise<void> {
+  protected async toggleLanguage(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -68,7 +68,7 @@ export class HeaderComponent {
     location.assign(`${nextPath}${search}${hash}`);
   }
 
-  toggleTheme() {
+  protected toggleTheme() {
     this.theme.toggleDarkMode(!this.theme.isDark());
   }
 }

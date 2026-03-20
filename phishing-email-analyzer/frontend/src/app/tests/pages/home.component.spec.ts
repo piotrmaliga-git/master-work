@@ -10,6 +10,12 @@ import { AiModelId } from '../../utils/constants/constans';
 describe('HomePageComponent', () => {
   let component: HomePageComponent;
   let apiServiceMock: { analyze: ReturnType<typeof vi.fn> };
+  const invokeAnalyzeRequest = (payload: {
+    emailText: string;
+    selectedModel: AiModelId;
+    sender: string;
+    title: string;
+  }) => (component as any).onAnalyzeRequest(payload) as Promise<void>;
 
   beforeEach(() => {
     apiServiceMock = {
@@ -35,7 +41,7 @@ describe('HomePageComponent', () => {
     };
     apiServiceMock.analyze.mockReturnValue(of(response));
 
-    await component.onAnalyzeRequest({
+    await invokeAnalyzeRequest({
       emailText: 'Mail body',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'sender@example.com',
@@ -68,7 +74,7 @@ describe('HomePageComponent', () => {
     component.result.set({ stale: true } as any);
     component.error.set('Old error');
 
-    const promise = component.onAnalyzeRequest({
+    const promise = invokeAnalyzeRequest({
       emailText: 'Mail body',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'sender@example.com',
@@ -86,7 +92,7 @@ describe('HomePageComponent', () => {
   it('should keep result null when backend returns no response body', async () => {
     apiServiceMock.analyze.mockReturnValue(of(undefined));
 
-    await component.onAnalyzeRequest({
+    await invokeAnalyzeRequest({
       emailText: 'Mail body',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'sender@example.com',
@@ -103,7 +109,7 @@ describe('HomePageComponent', () => {
       throwError(() => ({ error: { detail: 'Backend timeout' } }))
     );
 
-    await component.onAnalyzeRequest({
+    await invokeAnalyzeRequest({
       emailText: 'Mail body',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'test@example.com',
@@ -118,7 +124,7 @@ describe('HomePageComponent', () => {
   it('should set default error when backend detail is not available', async () => {
     apiServiceMock.analyze.mockReturnValue(throwError(() => new Error('Network down')));
 
-    await component.onAnalyzeRequest({
+    await invokeAnalyzeRequest({
       emailText: 'Mail body',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'test@example.com',
@@ -208,7 +214,8 @@ describe('HomePageComponent template', () => {
     };
     apiServiceMock.analyze.mockReturnValue(of(response));
 
-    component.onAnalyzeRequest({
+    const analyzer = util.analyzerDebug().componentInstance as AnalyzerComponent;
+    analyzer.analyzeRequest.emit({
       emailText: 'Payload from child output',
       selectedModel: AiModelId.GPT_4_1,
       sender: 'sender@example.com',
