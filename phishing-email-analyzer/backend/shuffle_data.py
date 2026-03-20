@@ -2,12 +2,16 @@ import json
 import random
 import argparse
 
-def load_data(filepath='../../data/data.json'):
+DEFAULT_DATA_PATH = '../../data/data.json'
+
+
+def load_data(filepath=DEFAULT_DATA_PATH):
     """Wczytaj dane z pliku JSON"""
     with open(filepath, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
 
-def save_data(data, filepath='../../data/data.json'):
+
+def save_data(data, filepath=DEFAULT_DATA_PATH):
     """Zapisz dane do pliku JSON"""
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
@@ -46,8 +50,8 @@ def main():
     )
     parser.add_argument(
         '-f', '--file',
-        default='../../data/data.json',
-        help='Ścieżka do pliku JSON (domyślnie: ../../data/data.json)'
+        default=DEFAULT_DATA_PATH,
+        help=f'Ścieżka do pliku JSON (domyślnie: {DEFAULT_DATA_PATH})'
     )
     
     args = parser.parse_args()
