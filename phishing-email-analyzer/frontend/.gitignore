@@ -1,12 +1,17 @@
 # Dependencies
 node_modules/
 
-# Angular build/cache artifacts
+# Angular build/cache
 dist/
 .angular/
 coverage/
+
+# Playwright test
 playwright-report/
 test-results/
+
+# ESlint
+.eslintcache
 
 # IDE and editor settings
 .vscode/
