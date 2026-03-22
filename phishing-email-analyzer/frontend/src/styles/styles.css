@@ -5,7 +5,12 @@
 @layer base {
   html,
   body {
-    @apply h-full w-full m-0 p-0;
+    @apply w-full m-0 p-0;
+    min-height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
     background: linear-gradient(
       165deg,
       var(--p-primary-50) 0%,
@@ -147,9 +152,45 @@
   }
 
   .reason-content {
-    @apply rounded-md p-4 text-sm leading-6;
-    background: var(--p-highlight-background);
+    @apply rounded-md p-4 text-sm leading-7;
+    background: linear-gradient(155deg, rgba(16, 185, 129, 0.16) 0%, rgba(6, 78, 59, 0.22) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.34);
     color: var(--p-text-color);
+  }
+
+  .reason-content p,
+  .reason-content li,
+  .reason-content span,
+  .reason-content strong,
+  .reason-content em,
+  .reason-content h1,
+  .reason-content h2,
+  .reason-content h3,
+  .reason-content h4,
+  .reason-content h5,
+  .reason-content h6 {
+    color: inherit;
+  }
+
+  .reason-content strong,
+  .reason-content h1,
+  .reason-content h2,
+  .reason-content h3,
+  .reason-content h4,
+  .reason-content h5,
+  .reason-content h6 {
+    font-weight: 700;
+  }
+
+  .reason-content ul,
+  .reason-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.2rem;
+  }
+
+  .reason-content a {
+    color: #67e8f9;
+    text-decoration: underline;
   }
 
   .model-list {
@@ -169,6 +210,22 @@
   .model-list strong {
     color: var(--p-primary-color);
   }
+}
+
+.app-dark .reason-content {
+  background: linear-gradient(155deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 78, 59, 0.38) 100%);
+  border-color: rgba(45, 212, 191, 0.4);
+  color: #ecfdf5;
+}
+
+.app-dark .reason-content strong,
+.app-dark .reason-content h1,
+.app-dark .reason-content h2,
+.app-dark .reason-content h3,
+.app-dark .reason-content h4,
+.app-dark .reason-content h5,
+.app-dark .reason-content h6 {
+  color: #f0fdf4;
 }
 
 @media (min-width: 768px) {
