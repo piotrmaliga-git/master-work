@@ -1,4 +1,3 @@
-% !TEX root = main.tex
 \usepackage[top=2.5cm,bottom=2.5cm,left=3.5cm,right=2.5cm,a4paper]{geometry} % Page margins
 
 % Packages for formatting and functionality
@@ -19,7 +18,6 @@
             labelsep=period,
             justification=centering]{caption}% Image decription
 
-\usepackage{minted} % Code blocks
 \usepackage{listings} % Alternative code blocks
 \usepackage{xcolor} % Colors
 \usepackage{longtable} % Long tables
@@ -72,12 +70,6 @@ urlcolor=black,%
 \titleformat{\subsection}
   {\normalfont\fontsize{12}{14}\bfseries} % Font size and style
   {\thesubsection}{1em}{}
-  
-% Ustawienia bloków kodu 
-\setminted{
-  frame=single,
-  baselinestretch=1
-}
 
 % Konfiguracja listings (dla kompatybilności)
 \lstset{

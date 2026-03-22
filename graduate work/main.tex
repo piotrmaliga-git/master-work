@@ -1,4 +1,3 @@
-% !TEX root = main.tex
 \documentclass[11pt]{extreport}
 
 % ===== IMPORT USTAWIEŃ =====
@@ -30,7 +29,6 @@
 \titleformat{\chapter}[hang]
   {\normalfont\fontsize{16}{20}\bfseries}
   {\thechapter.}{1em}{}
-      \clearpage
     \phantomsection
 
 \addcontentsline{toc}{chapter}{Wykaz oznaczeń}
@@ -57,11 +55,11 @@ GPT & Generative Pre-trained Transformer \\
 \chapter*{Streszczenie}
 \addcontentsline{toc}{chapter}{Streszczenie}
 
-Phishing stanowi jedno z największych zagrożeń dla bezpieczeństwa cyberprzestrzeni. W niniejszej pracy magisterskiej zaprezentowano kompleksowy system do automatycznej detekcji i klasyfikacji wiadomości phishingowych przy wykorzystaniu nowoczesnych modeli sztucznej inteligencji opartych na przetwarzaniu języka naturalnego (NLP).
+Phishing stanowi jedno z najistotniejszych zagrożeń dla bezpieczeństwa cyberprzestrzeni. W niniejszej pracy magisterskiej przedstawiono system automatycznej detekcji i klasyfikacji wiadomości phishingowych wykorzystujący nowoczesne modele sztucznej inteligencji z obszaru przetwarzania języka naturalnego (NLP).
 
-Głównym celem badań było porównanie wydajności modeli zintegrowanych w projekcie \textbf{Phishing Email Analyzer} oraz ocena ich przydatności praktycznej. Praca obejmuje kompletny stos aplikacyjny zbudowany w architekturze mikroserwisów (FastAPI + Angular), umożliwiający interaktywną analizę wiadomości email i zapis wyników w postaci raportów eksperymentalnych.
+Głównym celem badań było porównanie skuteczności modeli zintegrowanych w projekcie \textbf{Phishing Email Analyzer} oraz ocena ich przydatności praktycznej. Praca obejmuje kompletną architekturę aplikacyjną zbudowaną w układzie mikroserwisowym (FastAPI + Angular), umożliwiającą interaktywną analizę wiadomości e-mail i zapis wyników w postaci raportów eksperymentalnych.
 
-Wyniki raportów wskazują, że najwyższą jakość spośród modeli API osiągnęły Gemini 2.5 Pro (Accuracy 97.6\%, \(F_1=0.9766\)) oraz GPT-4.1 (Accuracy 95.6\%, \(F_1=0.9578\)). Jednocześnie analiza ujawniła istotne różnice implementacyjne pomiędzy adapterami modeli, które wpływają na odtwarzalność i gotowość wdrożeniową. Praca dostarcza praktycznych rekomendacji dla organizacji wybierających rozwiązania do ochrony przed phishingiem.
+Wyniki ewaluacji wskazują, że najwyższą jakość spośród modeli API osiągnęły Gemini 2.5 Pro (Accuracy 97.6\%, \(F_1=0.9766\)) oraz GPT-4.1 (Accuracy 95.6\%, \(F_1=0.9578\)). Jednocześnie analiza ujawniła istotne różnice implementacyjne pomiędzy adapterami modeli, które wpływają na odtwarzalność badań i gotowość wdrożeniową rozwiązania. Praca dostarcza praktycznych rekomendacji dla organizacji wybierających narzędzia ochrony przed phishingiem.
 
 \vspace{1cm}
 \noindent\textbf{Słowa kluczowe:} phishing, klasyfikacja tekstu, sztuczna inteligencja, transformatory, bezpieczeństwo cyberprzestrzeni, NLP
@@ -75,14 +73,14 @@ Wyniki raportów wskazują, że najwyższą jakość spośród modeli API osiąg
 
 Phishing pozostaje jednym z najczęściej wykorzystywanych wektorów ataku w praktyce bezpieczeństwa IT. W odróżnieniu od klasycznych zagrożeń technicznych, ataki phishingowe celują przede wszystkim w człowieka i kontekst komunikacji. W praktyce oznacza to, że nawet dojrzała infrastruktura techniczna nie gwarantuje odporności organizacji, jeżeli użytkownik końcowy otrzymuje wiarygodnie wyglądającą wiadomość i wykonuje niebezpieczną akcję.
 
-Wraz z upowszechnieniem modeli językowych nastąpiła równoległa zmiana po obu stronach: atakujący dysponują narzędziami do tworzenia bardziej przekonujących wiadomości, natomiast zespoły bezpieczeństwa uzyskały możliwość stosowania modeli NLP i LLM do automatycznej analizy treści. Ta praca koncentruje się na stronie obronnej, tj. na implementacji i ewaluacji systemu klasyfikacji wiadomości email do klas \textit{phishing} oraz \textit{legit}.
+Upowszechnienie modeli językowych zmieniło zarówno możliwości atakujących, jak i zestaw narzędzi dostępnych po stronie obronnej. Atakujący mogą generować bardziej przekonujące komunikaty, natomiast zespoły bezpieczeństwa zyskały możliwość wykorzystania modeli NLP i LLM do automatycznej analizy treści. Niniejsza praca koncentruje się na perspektywie obronnej, tj. na implementacji i ewaluacji systemu klasyfikacji wiadomości e-mail do klas \textit{phishing} oraz \textit{legit}.
 
 \section{Cel pracy}
 
-Celem pracy było zaprojektowanie i wykonanie działającego systemu \textbf{Phishing Email Analyzer} oraz porównanie jakości klasyfikacji kilku modeli dostępnych przez API i lokalnie. Praca ma charakter inżyniersko-badawczy:
+Celem pracy było zaprojektowanie i wykonanie działającego systemu \textbf{Phishing Email Analyzer} oraz porównanie jakości klasyfikacji kilku modeli udostępnianych przez API oraz uruchamianych lokalnie. Praca ma charakter inżyniersko-badawczy:
 
 \begin{itemize}
-    \item inżynierski, ponieważ obejmuje pełny stos aplikacyjny (frontend + backend + integracje modeli),
+    \item inżynierski, ponieważ obejmuje kompletną aplikację składającą się z frontendu, backendu oraz integracji modeli,
     \item badawczy, ponieważ wyniki modeli są oceniane ilościowo na tym samym zbiorze danych.
 \end{itemize}
 
@@ -129,7 +127,54 @@ F_1 &= 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \t
 
 W kontekście bezpieczeństwa szczególnie istotne jest ograniczenie liczby \textit{false negatives}, tj. przypadków, gdy realny phishing zostaje oznaczony jako wiadomość bezpieczna.
 
-% ===== ROZDZIAŁ 3: ZAŁOŻENIA BADANIA =====
+% ===== ROZDZIAŁ 3: JAK MODEL PRZETWARZA PROMPT =====
+\chapter{Jak model przetwarza prompt}
+\label{ch:prompt}
+
+W interfejsie użytkownik wykonuje prostą operację: wprowadza treść wiadomości, wybiera model, a następnie otrzymuje etykietę klasyfikacji oraz uzasadnienie. Z punktu widzenia modelu językowego jest to jednak sekwencja etapów obliczeniowych, w których tekst zostaje przekształcony do postaci numerycznej, zinterpretowany w kontekście, a następnie wykorzystany do wygenerowania odpowiedzi. Zrozumienie tych etapów jest istotne, ponieważ pozwala lepiej wyjaśnić zarówno mocne strony modeli, jak i ograniczenia ich użycia w detekcji phishingu.
+
+\section{Tokenizacja i reprezentacja wejścia}
+
+Pierwszym etapem przetwarzania promptu nie jest jeszcze analiza znaczenia, lecz podział tekstu na mniejsze jednostki zwane tokenami. Token nie musi odpowiadać całemu słowu; w praktyce może być słowem, fragmentem słowa, liczbą, znakiem interpunkcyjnym albo krótką sekwencją znaków. Dzięki temu model może pracować na spójnym, ustandaryzowanym wejściu niezależnie od długości i złożoności tekstu.
+
+W kontekście analizowanej aplikacji oznacza to, że nadawca, temat wiadomości oraz treść e-maila są ostatecznie zamieniane na sekwencję tokenów, która trafia do modelu. Dopiero na tej podstawie wykonywane są dalsze obliczenia.
+
+\section{Embedding, czyli znaczenie zapisane jako liczby}
+
+Po tokenizacji każdy token zostaje zamieniony na wektor liczbowy, czyli uporządkowany ciąg wartości numerycznych. Taka reprezentacja nazywana jest embeddingiem. Nie jest to zapis czytelny dla człowieka, lecz matematyczna postać znaczenia, na której model może wykonywać operacje algebraiczne.
+
+Intuicyjnie można przyjąć, że tokeny o podobnym znaczeniu są umieszczane blisko siebie w wielowymiarowej przestrzeni reprezentacji. Oznacza to, że wyrazy odnoszące się do podobnych obiektów, relacji lub czynności mają embeddingi bardziej zbliżone do siebie niż tokeny opisujące zjawiska całkowicie odmienne. Model nie operuje więc bezpośrednio na słowach jako symbolach językowych, lecz na ich położeniu w przestrzeni numerycznej.
+
+Z punktu widzenia niniejszej pracy ma to istotne znaczenie praktyczne. Wiadomości phishingowe często wykorzystują podobne wzorce semantyczne, takie jak presja czasu, żądanie weryfikacji, wezwanie do kliknięcia w link, odwołanie do bezpieczeństwa konta lub konieczność pilnego działania. Jeżeli takie wyrażenia pojawiają się w zbliżonych kontekstach, model może nauczyć się ich wspólnej reprezentacji i skuteczniej identyfikować podejrzane treści.
+
+\section{Mechanizm attention jako analiza kontekstu}
+
+Sam embedding nie wystarcza do poprawnego zrozumienia tekstu, ponieważ znaczenie wyrazu zależy od jego otoczenia. Z tego powodu modele transformatorowe wykorzystują mechanizm \textit{attention}, który określa, na które fragmenty wejścia należy zwrócić największą uwagę podczas interpretacji danego tokenu.
+
+Intuicyjnie oznacza to, że każdy token „sprawdza”, które inne tokeny w zdaniu lub w całym promptcie są dla niego najważniejsze. W rezultacie model potrafi rozróżniać znaczenia zależne od kontekstu, wykrywać relacje między odległymi fragmentami tekstu oraz wychwytywać zależności logiczne obecne w całej wypowiedzi.
+
+W analizie wiadomości phishingowych mechanizm ten jest szczególnie ważny. Samo słowo \textit{konto}, \textit{bank}, \textit{weryfikacja} lub \textit{link} nie przesądza jeszcze o złośliwym charakterze wiadomości. Znaczenie ma dopiero układ tych elementów w kontekście, na przykład połączenie informacji o pilnym działaniu, prośby o potwierdzenie danych i odwołania do zewnętrznego adresu URL. Mechanizm attention pozwala modelowi ocenić, które relacje są sygnałem ostrzegawczym, a które występują również w legalnej komunikacji.
+
+\section{Predykcja kolejnych tokenów}
+
+Po zbudowaniu reprezentacji kontekstowej model wykonuje zadanie podstawowe dla dużych modeli językowych, czyli przewiduje najbardziej prawdopodobny kolejny token. Proces ten przebiega iteracyjnie: model generuje jeden token, następnie uwzględnia go w kontekście i na tej podstawie przewiduje kolejny. W ten sposób odpowiedź powstaje krok po kroku, a nie jako gotowy blok tekstu przygotowany z góry.
+
+W klasycznym zastosowaniu generatywnym prowadzi to do tworzenia pełnych odpowiedzi tekstowych. W przypadku analizowanej aplikacji ten sam mechanizm jest wykorzystywany do wygenerowania odpowiedzi zawierającej klasyfikację wiadomości oraz uzasadnienie decyzji modelu. Innymi słowy, nawet wtedy, gdy system zwraca etykietę \texttt{phishing} albo \texttt{legit}, pod spodem nadal działa mechanizm generowania token po tokenie.
+
+\section{Znaczenie tych etapów dla klasyfikacji phishingu}
+
+Z perspektywy użytkownika cały proces można streścić następująco:
+
+\begin{enumerate}
+    \item tekst wiadomości zostaje podzielony na tokeny,
+    \item tokeny są zamieniane na embeddingi reprezentujące znaczenie,
+    \item mechanizm attention ustala, które fragmenty treści są najważniejsze dla interpretacji,
+    \item model generuje wynik klasyfikacji oraz jego uzasadnienie.
+\end{enumerate}
+
+Takie ujęcie dobrze wpisuje się w problematykę niniejszej pracy. Skuteczność modelu w wykrywaniu phishingu nie wynika wyłącznie z obecności pojedynczych słów-kluczy, lecz z umiejętności rozpoznawania wzorców semantycznych i zależności kontekstowych. To właśnie dlatego nowoczesne modele językowe mogą przewyższać prostsze podejścia regułowe, szczególnie w przypadkach, gdy wiadomość jest napisana poprawnie językowo i dopiero subtelne połączenie wielu sygnałów wskazuje na próbę oszustwa.
+
+% ===== ROZDZIAŁ 4: ZAŁOŻENIA BADANIA =====
 \chapter{Założenia badania}
 \label{ch:problem}
 
@@ -150,7 +195,7 @@ W kontekście bezpieczeństwa szczególnie istotne jest ograniczenie liczby \tex
     \item[\textbf{H3}] Praktyczna wartość rozwiązania zależy nie tylko od metryk, ale również od dojrzałości implementacji adapterów modeli.
 \end{description}
 
-% ===== ROZDZIAŁ 4: ARCHITEKTURA SYSTEMU =====
+% ===== ROZDZIAŁ 5: ARCHITEKTURA SYSTEMU =====
 \chapter{Architektura systemu}
 \label{ch:metodologia}
 
@@ -191,11 +236,130 @@ W kodzie backendu zdefiniowano integracje następujących modeli:
     \item \texttt{bielik-2-4bit}.
 \end{itemize}
 
-Istotna obserwacja implementacyjna: w kodzie odwoływany jest plik \texttt{models/bielik2\_4bit.py}, który nie występuje obecnie w drzewie repozytorium. Oznacza to, że bez uzupełnienia adaptera lub wyłączenia tego modelu uruchomienie pełnej ścieżki backendu może zakończyć się błędem ładowania modułu.
+Istotna obserwacja implementacyjna dotyczy modelu Bielik: backend sprawdza obecność pliku \texttt{models/bielik2\_4bit.py}, który nie występuje obecnie w drzewie repozytorium. W rezultacie model nie jest rejestrowany jako dostępny w działającej instancji backendu, co ogranicza możliwość pełnej reprodukcji wyników Bielika z poziomu jednej konfiguracji aplikacji.
+
+\section{Charakterystyka użytych modeli}
+
+W badaniu zestawiono zarówno modele komercyjne udostępniane przez API, jak i modele o otwartych wagach uruchamiane lokalnie lub przez warstwę pośrednią. Taki dobór pozwala porównać nie tylko skuteczność klasyfikacji, ale również odmienne filozofie budowy współczesnych systemów AI: rozwiązania zamknięte, rozwijane przez największe firmy technologiczne, oraz rozwiązania otwarte, które można integrować i uruchamiać we własnej infrastrukturze.
+
+\begin{description}[style=nextline]
+    \item[\textbf{GPT-4.1}] Model należy do rodziny GPT rozwijanej przez firmę OpenAI, która od 2018 roku popularyzuje duże modele generatywne oparte na architekturze transformera. W projekcie GPT-4.1 pełni rolę nowoczesnego modelu ogólnego przeznaczenia dostępnego przez API. Jego przewagą jest wysoka jakość rozumienia kontekstu, dobra zdolność uzasadniania decyzji oraz dojrzały ekosystem integracyjny.
+
+    \item[\textbf{Gemini 2.5 Pro}] Gemini to rodzina modeli rozwijana przez Google i zespoły Google DeepMind jako następca wcześniejszych linii modeli językowych i multimodalnych rozwijanych w tym ekosystemie. Wariant 2.5 Pro reprezentuje klasę dużych modeli API projektowanych do zadań wymagających analizy kontekstu, wnioskowania i pracy na złożonych danych wejściowych. W pracy model ten został wykorzystany jako reprezentant komercyjnych, wysoko wydajnych usług chmurowych.
+
+    \item[\textbf{Mistral 7B}] Mistral 7B Instruct jest modelem o otwartych wagach opracowanym przez francuską firmę Mistral AI, założoną w 2023 roku jako europejska odpowiedź na dominację amerykańskich dostawców dużych modeli językowych. Rodzina Mistral została szybko spopularyzowana dzięki relatywnie niewielkim wymaganiom obliczeniowym w stosunku do oferowanej jakości. W niniejszym projekcie model pełni rolę reprezentanta lekkich modeli open-weight, które można uruchamiać lokalnie i dalej dostosowywać do własnych potrzeb.
+
+    \item[\textbf{Llama Cloud}] Llama to rodzina modeli rozwijana przez firmę Meta, której kolejne generacje znacząco wpłynęły na popularyzację modeli o otwartych wagach w środowisku badawczym i inżynierskim. W projekcie wykorzystano wariant dostępny przez usługę chmurową, określany jako Llama Cloud, co oznacza połączenie zalet rodziny Llama z wygodą integracji przez API. Model ten stanowi przykład rozwiązania pośredniego między pełnym self-hostingiem a klasyczną usługą komercyjną zamkniętego dostawcy.
+
+    \item[\textbf{Bielik 11B v2.2 Instruct / Bielik 2 4-bit}] Bielik to polska rodzina modeli językowych rozwijana w ekosystemie SpeakLeash jako inicjatywa nastawiona na budowę modeli dobrze dostosowanych do języka polskiego i lokalnego kontekstu komunikacyjnego. W pracy wykorzystano eksperymentalny wariant 4-bitowy, odnoszący się do modelu Bielik 11B v2.2 Instruct, co miało ograniczyć wymagania sprzętowe podczas lokalnego uruchamiania. Obecność Bielika w porównaniu ma szczególne znaczenie praktyczne, ponieważ phishing w języku polskim zawiera cechy stylistyczne i kulturowe, które mogą być słabiej reprezentowane w modelach trenowanych głównie na danych anglojęzycznych.
+\end{description}
+
+Dobór tych modeli nie był przypadkowy. Z jednej strony obejmuje on rozwiązania silne jakościowo i łatwe do użycia przez API, z drugiej zaś modele bardziej otwarte i potencjalnie tańsze w eksploatacji, lecz wymagające większej kontroli nad środowiskiem uruchomieniowym. Dzięki temu porównanie ma wartość nie tylko badawczą, ale również wdrożeniową.
 
 \section{Frontend Angular}
 
 Frontend zawiera komponenty wejścia wiadomości i prezentacji wyniku oraz serwis komunikacji z API. Warstwa HTTP wywołuje backend przez metodę \texttt{analyze(...)} kierowaną do endpointu \texttt{/analyze}. Taki kontrakt API jest spójny z implementacją backendu.
+
+\section{Scenariusze działania aplikacji}
+
+W celu udokumentowania sposobu działania interfejsu przygotowano dwa równoległe scenariusze użytkownika przedstawione na zrzutach ekranu zapisanych w katalogu \texttt{images/}. Zrzuty oznaczone numerami od \texttt{1} do \texttt{5} prezentują ścieżkę analizy wiadomości phishingowej, natomiast zrzuty oznaczone tym samym numerem z dopiskiem \texttt{a} prezentują analogiczną ścieżkę dla wiadomości uznanej za legalną. Oznaczenia te nie odnoszą się do innych podstron systemu, lecz do dwóch różnych przebiegów pracy użytkownika w ramach tej samej aplikacji.
+
+Na poziomie routingu frontend udostępnia stronę główną pod ścieżkami \texttt{/}, \texttt{/pl} oraz \texttt{/en}. Zrzuty przedstawione poniżej dokumentują jednak przede wszystkim dwa scenariusze funkcjonalne: klasyfikację wiadomości podejrzanej oraz klasyfikację wiadomości uznanej za legalną.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{1.png}
+    \caption*{(1) Ekran startowy dla scenariusza wiadomości phishingowej}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{1a.png}
+    \caption*{(1a) Ekran startowy dla scenariusza wiadomości legalnej}
+\end{minipage}
+\caption{Widok początkowy aplikacji}
+\label{fig:app-start}
+\end{figure}
+
+Rysunek \ref{fig:app-start} przedstawia główny ekran aplikacji, na którym użytkownik wybiera model, wprowadza dane nadawcy, temat wiadomości oraz treść emaila. W dolnej części interfejsu prezentowana jest również lista dostępnych modeli.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{2.png}
+    \caption*{(2) Wybór modelu GPT-4.1}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{2a.png}
+    \caption*{(2a) Wybór modelu Llama Cloud}
+\end{minipage}
+\caption{Etap wyboru modelu do analizy}
+\label{fig:app-model-choice}
+\end{figure}
+
+Rysunek \ref{fig:app-model-choice} pokazuje pierwszy etap interakcji z formularzem, czyli wybór modelu językowego, który zostanie wykorzystany do klasyfikacji wiadomości.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{3.png}
+    \caption*{(3) Formularz uzupełniony wiadomością phishingową}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{3a.png}
+    \caption*{(3a) Formularz uzupełniony wiadomością legalną}
+\end{minipage}
+\caption{Wprowadzenie danych wejściowych do analizy}
+\label{fig:app-input-data}
+\end{figure}
+
+Na rysunku \ref{fig:app-input-data} pokazano dwa kompletne zestawy danych testowych. Pierwszy zawiera wiadomość o cechach socjotechnicznych typowych dla phishingu, natomiast drugi przedstawia poprawny komunikat administracyjny.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{4.png}
+    \caption*{(4) Przetwarzanie wiadomości phishingowej}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{4a.png}
+    \caption*{(4a) Przetwarzanie wiadomości legalnej}
+\end{minipage}
+\caption{Stan ładowania podczas wysyłania zapytania do backendu}
+\label{fig:app-loading}
+\end{figure}
+
+Rysunek \ref{fig:app-loading} przedstawia stan po uruchomieniu analizy, gdy formularz pozostaje zablokowany do czasu otrzymania odpowiedzi z backendu. Taki mechanizm zapobiega przypadkowemu wielokrotnemu wysłaniu tego samego żądania.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{5.png}
+    \caption*{(5) Wynik klasyfikacji wiadomości jako phishing}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{5a.png}
+    \caption*{(5a) Wynik klasyfikacji wiadomości jako legit}
+\end{minipage}
+\caption{Prezentacja wyniku analizy i uzasadnienia modelu}
+\label{fig:app-results}
+\end{figure}
+
+Rysunek \ref{fig:app-results} prezentuje końcowy rezultat działania systemu. Interfejs pokazuje nazwę użytego modelu, nadawcę, temat wiadomości, etykietę klasyfikacji, szczegółowe uzasadnienie decyzji modelu, a także czas odpowiedzi i znacznik czasu wykonania analizy.
 
 % ===== ROZDZIAŁ 5: METODOLOGIA EKSPERYMENTU =====
 \chapter{Metodologia eksperymentu}
@@ -295,9 +459,9 @@ W raportach dostępny jest pełny pomiar średniego czasu odpowiedzi dla modelu 
 
 \section{Interpretacja}
 
-Najlepszą jakość w modelach dostępnych przez API osiągnął Gemini 2.5 Pro, następnie GPT-4.1. Wyniki te potwierdzają, że duże modele ogólnego przeznaczenia dobrze radzą sobie z detekcją wzorców socjotechnicznych w treści wiadomości.
+Spośród modeli dostępnych przez API najwyższą jakość osiągnął Gemini 2.5 Pro, a następnie GPT-4.1. Wyniki te potwierdzają, że duże modele ogólnego przeznaczenia dobrze radzą sobie z detekcją wzorców socjotechnicznych w treści wiadomości.
 
-Wynik Bielika 11B (wariant 4-bit) jest bardzo wysoki, ale należy go interpretować ostrożnie: raport pochodzi z osobnego przebiegu eksperymentalnego i obecnie brak kompletnego adaptera tego modelu w głównej ścieżce backendu repozytorium. Oznacza to, że bardzo dobry wynik jakościowy nie przekłada się jeszcze automatycznie na gotowość produkcyjną tej integracji.
+Wynik Bielika 11B (wariant 4-bit) jest bardzo wysoki, ale należy go interpretować ostrożnie: raport pochodzi z osobnego przebiegu eksperymentalnego, a w aktualnej konfiguracji backendu brakuje adaptera umożliwiającego uruchomienie tego modelu z poziomu standardowej ścieżki aplikacyjnej. Oznacza to, że bardzo dobry wynik jakościowy nie przekłada się jeszcze automatycznie na gotowość wdrożeniową tej integracji.
 
 Słabsze wyniki Mistral 7B i Llama Cloud wynikają przede wszystkim z nadmiernej liczby \textit{false positives}. W praktyce operacyjnej oznacza to większe obciążenie analityków SOC i większą liczbę legalnych wiadomości kierowanych do dodatkowej weryfikacji.
 
@@ -314,7 +478,7 @@ Słabsze wyniki Mistral 7B i Llama Cloud wynikają przede wszystkim z nadmiernej
 \begin{itemize}
     \item Zbiór \texttt{data/data.json} ma charakter projektowy i mimo zróżnicowania kategorii nie zastępuje walidacji na niezależnych, zewnętrznych korpusach.
     \item Część raportów nie zawiera spójnych metadanych czasowych, co ogranicza precyzyjne porównanie latencji.
-    \item Brakujący adapter \texttt{bielik2\_4bit.py} w backendzie utrudnia odtworzenie pełnego pipeline'u dla wszystkich deklarowanych modeli.
+    \item Brakujący adapter \texttt{bielik2\_4bit.py} w backendzie utrudnia odtworzenie pełnego pipeline'u dla wszystkich deklarowanych modeli w ramach jednej konfiguracji aplikacji.
 \end{itemize}
 
 % ===== ROZDZIAŁ 8: WNIOSKI =====
@@ -349,7 +513,7 @@ Słabsze wyniki Mistral 7B i Llama Cloud wynikają przede wszystkim z nadmiernej
 
 \section{Podsumowanie}
 
-Zrealizowany projekt pokazuje, że połączenie nowoczesnych modeli językowych z prostą, dobrze zdefiniowaną architekturą aplikacyjną pozwala budować praktyczne narzędzia wspierające cyberbezpieczeństwo. Jednocześnie wyniki podkreślają, że sama jakość modelu nie wystarcza: równie ważne są odtwarzalność eksperymentu, kompletność integracji i kontrola jakości danych.
+Zrealizowany projekt pokazuje, że połączenie nowoczesnych modeli językowych z prostą, dobrze zdefiniowaną architekturą aplikacyjną pozwala budować praktyczne narzędzia wspierające cyberbezpieczeństwo. Jednocześnie wyniki podkreślają, że sama jakość modelu nie jest wystarczająca: równie istotne pozostają odtwarzalność eksperymentu, kompletność integracji i kontrola jakości danych.
 
 % ===== BIBLIOGRAFIA =====
 \printbibliography[heading=bibintoc,title={Bibliografia}]
@@ -370,76 +534,72 @@ Zrealizowany projekt pokazuje, że połączenie nowoczesnych modeli językowych 
     \item GPU (opcjonalnie) --- NVIDIA CUDA 12.1 lub wyżej
 \end{itemize}
 
-\section{Backend Setup}
+\section{Konfiguracja backendu}
 
 \begin{lstlisting}[language=bash, caption={Instalacja backendu}]
 # 1. Klonuj repozytorium
 git clone <REPO_URL>
 cd phishing-email-analyzer/backend
 
-# 2. Zaloz virtualenv
-python -m venv venv
-.\venv\Scripts\Activate  # Windows
-source venv/bin/activate  # macOS/Linux
+# 2. Utwórz środowisko wirtualne
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1  # Windows
+source .venv/bin/activate       # macOS/Linux
 
-# 3. Instaluj zaleznosci
+# 3. Zainstaluj zależności
 pip install -r requirements.txt
 
-# 4. Konfiguruj .env
-copy .env.example .env
-# Edytuj .env z API kluczami
+# 4. Uzupełnij plik .env
+# Wprowadź klucze API wymagane przez wybrane modele
 
 # 5. Uruchom backend
 uvicorn main:app --reload --host 127.0.0.1 --port 8000
 \end{lstlisting}
 
-\section{Frontend Setup}
+\section{Konfiguracja frontendu}
 
 \begin{lstlisting}[language=bash, caption={Instalacja frontendu}]
 cd ../frontend
 
-# 1. Instaluj Node packages
+# 1. Zainstaluj zależności Node.js
 npm install
 
-# 2. Konfiguruj environment
-cp environment.example.ts src/environments/environment.ts
-
-# 3. Uruchom dev server
+# 2. Uruchom serwer deweloperski
 npm start
 # Aplikacja: http://localhost:4200
 \end{lstlisting}
 
-\chapter{API Documentation}
+\chapter{Dokumentacja API}
 \label{app:api}
 
-\section{Base URL}
+\section{Adres bazowy API}
 
 \texttt{http://localhost:8000}
 
 \section{POST /analyze}
 
-Klasyfikuje pojedynczy email.
+Klasyfikuje pojedynczą wiadomość e-mail.
 
-\textbf{Request:}
+\textbf{Żądanie:}
 \begin{lstlisting}[language=json]
 {
   "email_text": "Kliknij tutaj...",
   "model_name": "gpt-4.1",
   "sender": "admin@bank.com",
-  "title": "Wazna wiadomosc od Banku"
+    "title": "Ważna wiadomość od banku"
 }
 \end{lstlisting}
 
-\textbf{Response (200 OK):}
+\textbf{Odpowiedź (200 OK):}
 \begin{lstlisting}[language=json]
 {
     "model": "gpt-4.1",
   "prediction": "phishing",
-  "reason": "Email zawiera...",
+    "reason": "Wiadomość zawiera...",
     "timestamp": "2026-03-12T12:34:56.123456",
     "response_time_ms": 842.31,
     "sender": "admin@bank.com",
-    "title": "Wazna wiadomosc od Banku"
+    "title": "Ważna wiadomość od banku"
 }
 \end{lstlisting}
 
@@ -447,40 +607,15 @@ Klasyfikuje pojedynczy email.
 \label{app:slownik}
 
 \begin{description}
-    \item[Phishing] Atak socjalny poprzez email mający na celu kradzież poufnych informacji
+    \item[Phishing] Atak socjotechniczny realizowany za pośrednictwem wiadomości e-mail, którego celem jest wyłudzenie poufnych informacji
     \item[NLP] Natural Language Processing --- przetwarzanie języka naturalnego
     \item[LLM] Large Language Model --- duży model językowy
-    \item[Transformator] Architektura neuronowa oparta na Self-Attention
-    \item[Fine-tuning] Dostrojenie pre-trained modelu na specjalistycznym zbiorze
+    \item[Transformator] Architektura sieci neuronowej oparta na mechanizmie self-attention
+    \item[Fine-tuning] Dostrojenie modelu wstępnie wytrenowanego na zbiorze specjalistycznym
     \item[SOTA] State-of-the-Art --- najnowsze rezultaty w danej dziedzinie
-    \item[Ensemble] Kombinacja wielu modeli w celu poprawy wydajności
-    \item[False Positive] Alarm fałszywy --- legalne coś sklasyfikowane jako phishing
-    \item[False Negative] Missed detection --- phishing przegapiony
+    \item[Ensemble] Połączenie wielu modeli w celu poprawy jakości predykcji
+    \item[False Positive] Fałszywy alarm --- wiadomość legalna błędnie sklasyfikowana jako phishing
+    \item[False Negative] Pominięcie zagrożenia --- wiadomość phishingowa błędnie uznana za bezpieczną
 \end{description}
-
-% ===== BIBLIOGRAFIA =====
-\printbibliography[title={Literatura}]
-
-% ===== SUMMARY (ENGLISH) =====
-\begingroup
-\titleformat{\chapter}[hang]
-  {\normalfont\fontsize{16}{20}\bfseries\centering}
-  {\thechapter.}{1em}{}
-      \clearpage
-    \phantomsection
-
-\addcontentsline{toc}{chapter}{Summary}
-\chapter*{Summary}
-\endgroup
-
-This master's thesis addresses automated phishing email detection with modern Natural Language Processing (NLP) models and an end-to-end engineering implementation. The work presents the design and evaluation of the Phishing Email Analyzer system, combining a FastAPI backend, an Angular frontend, and multiple model adapters.
-
-Experimental evaluation was conducted on a balanced project dataset of 500 emails (250 phishing, 250 legit). The best API-based results were obtained by Gemini 2.5 Pro (Accuracy 97.6\%, \(F_1=0.9766\)) and GPT-4.1 (Accuracy 95.6\%, \(F_1=0.9578\)). Llama Cloud and Mistral 7B produced lower overall accuracy mainly due to a high number of false positives. An additional Bielik 11B 4-bit report reached high quality metrics, but its backend adapter is not yet fully integrated in the current repository state.
-
-The key contribution of this thesis is practical: not only model comparison, but also a reproducible application workflow linking dataset, inference, and JSON reports. The findings show that operational readiness depends on both predictive performance and implementation maturity of model adapters.
-
-The thesis provides implementation-oriented recommendations for production use, including model selection by risk profile, reduction of false positives through secondary verification, and unification of reporting across all adapters. Future work includes extending the dataset, completing local-model integration, and adding URL/attachment-aware multimodal analysis.
-
-This work contributes to the field by offering a comprehensive, reproducible framework for phishing detection, demonstrating the practical applicability of modern AI models in cybersecurity, and highlighting the critical trade-offs between accuracy, cost, and privacy in real-world deployments.
 
 \end{document}
