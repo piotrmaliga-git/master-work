@@ -1,48 +1,461 @@
-Zaktualizowany spis treści
-Wprowadzenie
-1.1. Motywacja i kontekst
-1.2. Cel pracy
-1.3. Zakres pracy
-Tło techniczne
-2.1. Czym jest phishing – definicja i znaczenie
-2.2. Rodzaje phishingu
-2.2.1. Phishing e-mailowy
-2.2.2. Phishing telefoniczny (vishing)
-2.2.3. Phishing SMS (smishing)
-2.2.4. Spear phishing i whaling
-2.3. Ewolucja metod detekcji phishingu
-2.4. Metryki oceny
-Przetwarzanie promptów i działanie modeli językowych
-3.1. Tokenizacja i reprezentacja wejścia
-3.2. Reprezentacja wektorowa (embedding)
-3.3. Mechanizm attention i analiza kontekstu
-3.4. Predykcja kolejnych tokenów
-3.5. Znaczenie etapów przetwarzania dla klasyfikacji phishingu
-Założenia i pytania badawcze
-4.1. Pytania badawcze
-Dane eksperymentalne
-5.1. Źródła danych
-5.1.1. Istniejące zbiory danych (np. Seven Phishing Email Datasets – Figshare)
-5.1.2. Generowanie danych za pomocą AI na podstawie istniejących baz
-5.2. Przygotowanie i wstępne przetwarzanie danych
-5.3. Charakterystyka zbioru danych (rozmiar, typy wiadomości, klasy)
-5.4. Podział na zestawy treningowe i testowe
-Architektura systemu
-6.1. Przegląd komponentów
-6.2. Backend FastAPI
-6.3. Warstwa modeli
-6.4. Charakterystyka użytych modeli
-6.5. Frontend Angular
-6.6. Opis działania aplikacji
-Eksperymenty i wyniki
-7.1. Konfiguracja eksperymentów
-7.2. Analiza wyników
-7.3. Porównanie modeli
-Dyskusja i wnioski
-8.1. Interpretacja wyników
-8.2. Ograniczenia pracy
-8.3. Kierunki dalszych badań
-Bibliografia
-Aneksy / materiały dodatkowe
-10.1. Kody źródłowe
-10.2. Raporty z uruchomień modeli
+\documentclass[12pt,a4paper,openany]{report}
+
+\input{settings}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\input{title_page}
+\restoregeometry
+\clearpage
+
+\input{claims_page}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+
+\chapter{Wprowadzenie}
+
+Phishing pozostaje jednym z najbardziej rozpowszechnionych i najskuteczniejszych wektorów ataku wykorzystywanych przeciwko użytkownikom indywidualnym oraz organizacjom. W praktyce operacyjnej cyberbezpieczeństwa nadal obserwuje się dominację kampanii opartych o wiadomości tekstowe, podszywanie się pod zaufane podmioty, presję czasu oraz wymuszanie działań związanych z logowaniem, płatnością albo potwierdzeniem tożsamości \cite{apwg2023,kaspersky2024}. Wraz ze wzrostem jakości generowanej treści rośnie również trudność odróżnienia wiadomości prawdziwej od spreparowanej, zwłaszcza gdy atakujący wykorzystują poprawny język, lokalny kontekst oraz elementy personalizacji.
+
+Równolegle z rozwojem technik phishingowych rozwijają się metody obrony. Klasyczne filtry regułowe i systemy oparte na ręcznie projektowanych cechach są dziś uzupełniane przez modele uczenia maszynowego i architektury transformerowe. Szczególnie interesującą grupę stanowią duże modele językowe, które potrafią analizować treść semantycznie, uwzględniać kontekst i formułować uzasadnienie decyzji klasyfikacyjnej. Z perspektywy praktycznej otwiera to możliwość budowy systemów, które nie tylko wskazują etykietę \textit{phishing} albo \textit{legit}, lecz również wyjaśniają, jakie cechy wiadomości zadecydowały o wyniku.
+
+\section{Motywacja i kontekst}
+
+Motywacją do realizacji pracy było połączenie dwóch perspektyw: badawczej oraz inżynierskiej. Z jednej strony istotne było porównanie kilku współczesnych modeli językowych w zadaniu wykrywania phishingu w polskojęzycznych wiadomościach e-mail. Z drugiej strony celem było przygotowanie działającej aplikacji webowej, która udostępnia wspólny interfejs do analizy wiadomości i pozwala na praktyczne sprawdzenie zachowania poszczególnych modeli.
+
+W pracy przyjęto założenie, że sam wynik klasyfikacji nie jest wystarczający. W środowisku rzeczywistym użytkownik lub analityk bezpieczeństwa potrzebuje także uzasadnienia, które wskaże między innymi: podejrzaną domenę, próbę wywołania presji czasu, niespójność stylu wiadomości, żądanie podania kodu SMS lub odwołanie do fałszywego panelu logowania. Taka interpretowalność jest szczególnie cenna w zastosowaniach edukacyjnych i demonstracyjnych.
+
+\section{Cel pracy}
+
+Celem pracy jest analiza porównawcza skuteczności wybranych modeli językowych w wykrywaniu wiadomości phishingowych oraz przygotowanie prototypowej aplikacji umożliwiającej interaktywne badanie pojedynczych wiadomości. W ramach pracy zrealizowano następujące zadania:
+
+\begin{itemize}
+    \item przygotowanie ujednoliconego zbioru danych w języku polskim, zawierającego przykłady wiadomości phishingowych i legalnych,
+    \item implementację backendu udostępniającego jednolite API do komunikacji z modelami,
+    \item implementację frontendu umożliwiającego wybór modelu i analizę treści wiadomości,
+    \item przeprowadzenie eksperymentów porównawczych na wspólnym zbiorze 500 próbek,
+    \item interpretację wyników ilościowych i jakościowych.
+\end{itemize}
+
+\section{Zakres pracy}
+
+Zakres pracy obejmuje analizę pięciu modeli: GPT-4.1, Gemini 2.5 Pro, Mistral 7B, Llama Cloud oraz Bielik 2 (4-bit). Badanie dotyczy klasyfikacji binarnej wiadomości do jednej z dwóch klas: \textit{phishing} lub \textit{legit}. Praca koncentruje się na treści wiadomości e-mail i jej interpretacji przez modele językowe. Nie obejmuje analizy nagłówków SMTP, reputacji domen w czasie rzeczywistym, załączników binarnych ani integracji z zewnętrznymi systemami pocztowymi klasy enterprise.
+
+\chapter{Tło techniczne}
+
+\section{Czym jest phishing -- definicja i znaczenie}
+
+Phishing to technika socjotechniczna polegająca na podszywaniu się pod zaufany podmiot w celu skłonienia ofiary do wykonania określonego działania, najczęściej związanego z ujawnieniem danych uwierzytelniających, przekazaniem danych płatniczych lub uruchomieniem złośliwego zasobu \cite{jagatic2007social}. W odróżnieniu od wielu ataków stricte technicznych, phishing wykorzystuje przede wszystkim mechanizmy psychologiczne: autorytet, presję czasu, strach przed konsekwencjami oraz pozorną rutynowość komunikatu.
+
+Znaczenie phishingu wynika z jego niskiego kosztu przygotowania i jednocześnie wysokiej skuteczności. Nawet częściowo udana kampania może prowadzić do przejęcia kont pocztowych, rachunków bankowych, dostępów korporacyjnych albo do dalszej infiltracji infrastruktury organizacji. Raporty branżowe wskazują, że phishing pozostaje jednym z głównych źródeł incydentów bezpieczeństwa \cite{apwg2023,kaspersky2024}.
+
+\section{Rodzaje phishingu}
+
+Pojęcie phishingu obejmuje szeroką grupę technik. Różnią się one kanałem komunikacji, stopniem personalizacji oraz celem ataku.
+
+\subsection{Phishing e-mailowy}
+
+Najbardziej klasyczna forma ataku polega na przesłaniu wiadomości e-mail imitującej komunikat banku, kuriera, urzędu, platformy społecznościowej albo systemu firmowego. Wiadomość zawiera zwykle link do strony podszywającej się pod legalny portal albo prośbę o szybką reakcję w sprawie rzekomego problemu z kontem, płatnością lub bezpieczeństwem. Ten wariant stanowi główny przedmiot niniejszej pracy.
+
+\subsection{Phishing telefoniczny (vishing)}
+
+Vishing przenosi mechanizm oszustwa do rozmowy głosowej. Atakujący podaje się na przykład za pracownika banku, dział bezpieczeństwa lub wsparcie techniczne. Celem jest skłonienie ofiary do podania kodu autoryzacyjnego, hasła jednorazowego albo do zainstalowania oprogramowania zdalnego dostępu.
+
+\subsection{Phishing SMS (smishing)}
+
+Smishing wykorzystuje wiadomości SMS lub komunikatory mobilne. Typowy scenariusz to prośba o dopłatę do przesyłki, aktualizację danych konta albo natychmiastowe odblokowanie usługi. Krótka forma komunikatu, ograniczona przestrzeń tekstowa i częste użycie skróconych linków zwiększają skuteczność takiego ataku.
+
+\subsection{Spear phishing i whaling}
+
+Spear phishing jest atakiem celowanym, przygotowanym dla konkretnej osoby lub niewielkiej grupy odbiorców. Wiadomość odwołuje się do realnego kontekstu organizacyjnego, projektu, wydarzenia lub relacji biznesowej. Szczególną odmianą jest \textit{whaling}, czyli ataki wymierzone w kadrę zarządzającą. Tego typu kampanie charakteryzują się większą precyzją i zwykle wyższą jakością treści.
+
+\section{Ewolucja metod detekcji phishingu}
+
+Wczesne systemy detekcji opierały się głównie na czarnych listach adresów URL, filtrach regułowych i zestawach cech ręcznie projektowanych \cite{bergholz2010filtering,fette2007learning}. Następnie pojawiły się klasyczne modele uczenia maszynowego, wykorzystujące reprezentacje słów, n-gramy, statystyki treści i cechy strukturalne wiadomości. Kolejny etap stanowiły metody głębokiego uczenia, w tym sieci rekurencyjne i architektury oparte na embeddingach \cite{hochreiter1997lstm,chollet2017deep}.
+
+Rozwój architektury transformer przyniósł istotną zmianę jakościową. Dzięki mechanizmowi attention możliwa stała się skuteczniejsza analiza relacji między fragmentami tekstu oraz lepsze modelowanie długiego kontekstu \cite{vaswani2017attention}. Modele takie jak BERT, T5 czy rodziny współczesnych dużych modeli językowych pozwalają traktować klasyfikację phishingu jako zadanie rozumienia tekstu, a nie jedynie wykrywania słów-kluczy \cite{devlin2018bert,raffel2019exploring,rahmadani2023robust,wagner2024llms}.
+
+\section{Metryki oceny}
+
+W zadaniach klasyfikacji binarnej podstawą oceny są wartości wynikające z macierzy pomyłek: \textit{TP} (true positive), \textit{TN} (true negative), \textit{FP} (false positive) oraz \textit{FN} (false negative). W pracy wykorzystano następujące metryki:
+
+\begin{align*}
+Accuracy &= \frac{TP + TN}{TP + TN + FP + FN} \\
+Precision &= \frac{TP}{TP + FP} \\
+Recall &= \frac{TP}{TP + FN} \\
+F1 &= 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}
+\end{align*}
+
+W kontekście phishingu szczególnie istotne są dwie obserwacje. Po pierwsze, wysoki \textit{recall} dla klasy \textit{phishing} oznacza skuteczne wychwytywanie realnych zagrożeń. Po drugie, zbyt wysoka liczba \textit{false positive} obniża użyteczność systemu, ponieważ poprawne wiadomości są błędnie oznaczane jako niebezpieczne. W praktyce system ochronny powinien więc zachowywać rozsądny kompromis między czułością i precyzją.
+
+\chapter{Przetwarzanie promptów i działanie modeli językowych}
+
+\section{Tokenizacja i reprezentacja wejścia}
+
+Duże modele językowe nie operują bezpośrednio na pełnych słowach zapisanych przez użytkownika, lecz na tokenach, czyli mniejszych jednostkach tekstu. Tokenizacja dzieli wiadomość na elementy, które mogą odpowiadać całym słowom, fragmentom słów, znakom interpunkcyjnym albo częstym sekwencjom znaków. Jakość tokenizacji ma znaczenie dla analizy phishingu, ponieważ podejrzane domeny, skróty, nietypowe ciągi znaków i formy stylometryczne bywają rozbijane w sposób, który wpływa na dalszą interpretację przez model.
+
+\section{Reprezentacja wektorowa (embedding)}
+
+Po tokenizacji każdy element wejścia jest odwzorowywany do reprezentacji wektorowej. Embedding koduje nie tylko tożsamość tokenu, ale pośrednio także jego relacje semantyczne i składniowe. W zadaniu wykrywania phishingu pozwala to modelowi zbliżyć do siebie znaczeniowo takie elementy jak: \textit{weryfikacja}, \textit{potwierdzenie tożsamości}, \textit{pilne działanie}, \textit{blokada konta} czy \textit{panel logowania}. Dzięki temu klasyfikacja może bazować na wzorcach semantycznych, a nie jedynie na prostym dopasowaniu słów.
+
+\section{Mechanizm attention i analiza kontekstu}
+
+Kluczowym elementem współczesnych modeli językowych jest mechanizm attention, który umożliwia ważenie relacji pomiędzy różnymi fragmentami wejścia \cite{vaswani2017attention}. W praktyce oznacza to, że model może jednocześnie analizować zależność między deklarowanym nadawcą, tonem wiadomości, nazwą panelu, treścią wezwania do działania oraz adresem URL. Dla phishingu jest to szczególnie ważne, ponieważ ostateczna ocena zwykle wynika z kombinacji kilku słabszych przesłanek, a nie z jednego jednoznacznego sygnału.
+
+\section{Predykcja kolejnych tokenów}
+
+Modele generatywne są trenowane jako predyktory kolejnych tokenów. Chociaż w praktyce użytkowej wykorzystuje się je do klasyfikacji, streszczeń czy ekstrakcji informacji, ich podstawowy mechanizm nadal opiera się na przewidywaniu najbardziej prawdopodobnej kontynuacji sekwencji. W zadaniu klasyfikacji phishingu oznacza to, że model odpowiada zgodnie z najbardziej prawdopodobnym wzorcem interpretacji wiadomości w świetle promptu i wiedzy nabytej w procesie trenowania.
+
+\section{Znaczenie etapów przetwarzania dla klasyfikacji phishingu}
+
+Każdy z opisanych etapów ma znaczenie praktyczne. Tokenizacja pomaga zauważyć anomalie w domenach i adresach URL. Embeddingi wspierają rozpoznawanie podobnych znaczeniowo struktur językowych. Attention umożliwia łączenie sygnałów rozproszonych po całym tekście. Mechanizm generacji pozwala z kolei budować uzasadnienie decyzji, co odróżnia duże modele językowe od wielu klasycznych klasyfikatorów. W badaniu przyjęto podejście inferencyjne: modele otrzymywały treść wiadomości i na tej podstawie zwracały etykietę oraz opis argumentów przemawiających za decyzją.
+
+\chapter{Założenia i pytania badawcze}
+
+W pracy przyjęto następujące założenia badawcze:
+
+\begin{itemize}
+    \item wszystkie porównywane modele klasyfikowane są w tym samym zadaniu binarnym,
+    \item dla każdego modelu stosowany jest jednolity schemat uruchomienia i jednolity format raportowania wyniku,
+    \item dane eksperymentalne mają zrównoważony rozkład klas, co ogranicza wpływ nierównowagi klas na interpretację dokładności,
+    \item ocena dotyczy skuteczności praktycznej w gotowej aplikacji i w skryptach ewaluacyjnych, a nie dalszego dostrajania parametrów modeli.
+\end{itemize}
+
+\section{Pytania badawcze}
+
+Na tej podstawie sformułowano następujące pytania badawcze:
+
+\begin{enumerate}
+    \item Który z porównywanych modeli osiąga najwyższą skuteczność klasyfikacji w zadaniu wykrywania phishingu na przygotowanym zbiorze 500 wiadomości?
+    \item Czy modele różnią się głównie liczbą przeoczonych wiadomości phishingowych, czy raczej skłonnością do błędnego oznaczania wiadomości legalnych jako zagrożenia?
+    \item Czy model polskojęzyczny Bielik 2 (4-bit) może konkurować z modelami globalnymi w analizie polskojęzycznych treści phishingowych?
+    \item Czy udostępnienie analizy w aplikacji webowej zwiększa przejrzystość i użyteczność porównania modeli względem samego raportu liczbowego?
+\end{enumerate}
+
+\chapter{Dane eksperymentalne}
+
+\section{Źródła danych}
+
+Zbiór wykorzystany w badaniu został zapisany w pliku \texttt{data/data.json}. Każdy rekord zawiera sześć pól: \texttt{id}, \texttt{title}, \texttt{sender}, \texttt{text}, \texttt{ground\_truth} oraz \texttt{category}. Taka struktura umożliwia jednoczesne przechowywanie pełnej treści wiadomości, etykiety referencyjnej oraz kategorii tematycznej potrzebnej do analiz przekrojowych.
+
+\subsection{Istniejące zbiory danych (np. Seven Phishing Email Datasets -- Figshare)}
+
+Punktem wyjścia dla przygotowania własnego zbioru była publicznie dostępna kolekcja \textit{Seven Phishing Email Datasets} udostępniona w serwisie Figshare pod adresem \url{https://figshare.com/articles/dataset/Seven_Phishing_Email_Datasets/25432108}. Zbiór ten stanowił źródło inspiracji dla konstrukcji przypadków użycia, typów oszustw oraz rozróżnienia pomiędzy wiadomościami podejrzanymi i legalnymi.
+
+W pracy nie wykorzystano tej kolekcji wprost jako finalnego pliku wejściowego aplikacji. Zamiast tego potraktowano ją jako bazę referencyjną do budowy własnego, spójnego zbioru polskojęzycznego, lepiej dopasowanego do celu porównania modeli i demonstracji działania aplikacji.
+
+\subsection{Generowanie danych za pomocą AI na podstawie istniejących baz}
+
+Na podstawie wzorców obecnych w publicznych zbiorach przygotowano własne przykłady wiadomości. Proces obejmował parafrazowanie, lokalizację treści do realiów polskojęzycznych oraz tworzenie odpowiadających im wiadomości legalnych o podobnej tematyce. Dzięki temu możliwe było porównywanie modeli na danych bardziej zbliżonych do typowych komunikatów spotykanych przez użytkowników w Polsce, takich jak: przesyłki, bankowość, podatki, edukacja, wspólnoty mieszkaniowe czy usługi streamingowe.
+
+Istotne było zachowanie różnorodności scenariuszy i uniknięcie nadmiernej jednorodności stylistycznej. W szczególności zadbano o obecność zarówno wiadomości wykorzystujących klasyczne techniki nacisku, jak i wiadomości legalnych, które zawierają link, zwrot do konkretnej osoby lub kontekst administracyjny, ale nie są próbą oszustwa.
+
+\section{Przygotowanie i wstępne przetwarzanie danych}
+
+Przygotowanie danych obejmowało kilka etapów. Po pierwsze, ujednolicono strukturę wszystkich rekordów do wspólnego formatu JSON. Po drugie, dokonano normalizacji etykiet do dwóch wartości: \texttt{phishing} oraz \texttt{legit}. Po trzecie, przypisano kategorię tematyczną każdej próbce, co umożliwiło późniejszą analizę zbioru. Po czwarte, sprawdzono poprawność kodowania znaków oraz spójność składni JSON.
+
+Na rys. \ref{fig:legit-json} i rys. \ref{fig:phishing-json} pokazano przykładowe rekordy reprezentujące odpowiednio wiadomość legalną i phishingową. Struktura danych jest taka sama w obu klasach, a różnica dotyczy wyłącznie zawartości pól oraz etykiety referencyjnej.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.97\textwidth]{data/legit-json-structure.png}
+    \caption{Przykładowa struktura rekordu dla wiadomości legalnej}
+    \label{fig:legit-json}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.97\textwidth]{data/phishing-json-structure.png}
+    \caption{Przykładowa struktura rekordu dla wiadomości phishingowej}
+    \label{fig:phishing-json}
+\end{figure}
+
+\section{Charakterystyka zbioru danych (rozmiar, typy wiadomości, klasy)}
+
+Finalny zbiór zawiera 500 wiadomości, z czego 250 oznaczono jako \texttt{phishing}, a 250 jako \texttt{legit}. Oznacza to całkowicie zrównoważony rozkład klas, co ułatwia interpretację wyników i ogranicza ryzyko sztucznego zawyżenia dokładności przez dominację jednej klasy.
+
+Zbiór obejmuje 19 kategorii tematycznych. Rozkład liczebności kategorii przedstawiono w tabeli \ref{tab:category-distribution}. Najliczniej reprezentowane są wiadomości z kategorii \textit{invoice}, \textit{event} oraz \textit{banking}, ale w zbiorze znalazły się również mniej liczne klasy dotyczące edukacji, zdrowia, społeczności lokalnych, kont internetowych, gier i usług streamingowych.
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{l r l r}
+        \toprule
+        Kategoria & Liczba & Kategoria & Liczba \\
+        \midrule
+        invoice & 40 & tax & 25 \\
+        event & 33 & account & 25 \\
+        banking & 33 & health & 24 \\
+        education & 28 & gaming & 23 \\
+        social & 27 & newsletter & 23 \\
+        community & 27 & crypto & 23 \\
+        delivery & 27 & meeting & 22 \\
+        travel & 27 & hr & 22 \\
+        work & 26 & shopping & 19 \\
+        streaming & 26 &  &  \\
+        \bottomrule
+    \end{tabular}
+    \caption{Rozkład kategorii tematycznych w zbiorze danych}
+    \label{tab:category-distribution}
+\end{table}
+
+Warto podkreślić, że przyjęta struktura danych ma znaczenie nie tylko dla eksperymentów wsadowych, lecz także dla aplikacji webowej. Pola \texttt{sender} oraz \texttt{title} są prezentowane użytkownikowi w interfejsie i zwracane w odpowiedzi API, natomiast zasadnicza klasyfikacja modeli w skryptach porównawczych opiera się na polu \texttt{text}, czyli na treści wiadomości.
+
+\section{Podział na zestawy treningowe i testowe}
+
+W badaniu nie przeprowadzano klasycznego trenowania modeli na przygotowanym zbiorze. Porównywane rozwiązania są modelami gotowymi, używanymi w trybie inferencyjnym. Z tego względu finalny plik \texttt{data.json} pełni rolę zestawu ewaluacyjnego, a nie treningowego.
+
+Takie podejście było uzasadnione charakterem pracy. Celem nie było budowanie nowego klasyfikatora od podstaw, lecz sprawdzenie, jak zachowują się gotowe modele językowe w identycznym zadaniu i na wspólnym zbiorze. W konsekwencji zamiast podziału na część treningową i testową zastosowano jednolity benchmark obejmujący wszystkie 500 wiadomości.
+
+\chapter{Architektura systemu}
+
+\section{Przegląd komponentów}
+
+Opracowany system składa się z trzech głównych warstw:
+
+\begin{itemize}
+    \item warstwy danych, obejmującej zbiór wejściowy i raporty z ewaluacji modeli,
+    \item warstwy backendowej zbudowanej w FastAPI, odpowiedzialnej za udostępnienie jednolitego interfejsu do klasyfikacji,
+    \item warstwy frontendowej w Angularze, umożliwiającej interaktywną analizę wiadomości.
+\end{itemize}
+
+Uzupełnieniem całości jest katalog modeli, w którym każdy wariant klasyfikatora posiada własny adapter, a także zestaw raportów JSON dokumentujących wyniki pełnych uruchomień eksperymentalnych.
+
+\section{Backend FastAPI}
+
+Backend został zaimplementowany w języku Python z użyciem frameworka FastAPI. Plik \texttt{backend/main.py} odpowiada za uruchomienie aplikacji, dynamiczne ładowanie adapterów modeli oraz obsługę żądań HTTP. Zastosowano mechanizm dynamicznego importu modułów z katalogu \texttt{models}, co upraszcza rozszerzanie systemu o kolejne modele bez przebudowy głównej logiki serwera.
+
+API udostępnia dwa główne endpointy:
+
+\begin{itemize}
+    \item \texttt{GET /} -- zwracający podstawowe informacje o API oraz listę dostępnych modeli,
+    \item \texttt{POST /analyze} -- przyjmujący żądanie klasyfikacji pojedynczej wiadomości.
+\end{itemize}
+
+Model danych wejściowych obejmuje treść wiadomości, identyfikator wybranego modelu, adres nadawcy oraz tytuł wiadomości. Odpowiedź zawiera przewidywaną klasę, uzasadnienie, znacznik czasu, czas odpowiedzi i metadane wiadomości. Dzięki temu frontend może wyświetlić wynik w sposób zrozumiały dla użytkownika.
+
+\section{Warstwa modeli}
+
+Warstwa modeli została zorganizowana jako zestaw adapterów o wspólnym celu funkcjonalnym: każdy z nich ma zwrócić etykietę klasyfikacji oraz tekstowe uzasadnienie. Taki sposób organizacji upraszcza porównanie modeli, ponieważ różnice implementacyjne są ukryte za jednakowym interfejsem logicznym.
+
+W eksperymentach wsadowych funkcje klasyfikujące otrzymują treść wiadomości z pola \texttt{text}. Oznacza to, że ocena modeli dotyczy ich zdolności do rozpoznawania phishingu na podstawie samej treści komunikatu. Pola \texttt{sender} i \texttt{title} są natomiast wykorzystywane jako metadane prezentowane w aplikacji i raportach. Jest to ważne metodologicznie, ponieważ ogranicza zakres wniosków wyłącznie do analizy treściowej, a nie pełnej analizy wszystkich atrybutów wiadomości e-mail.
+
+\section{Charakterystyka użytych modeli}
+
+W systemie uwzględniono pięć modeli, reprezentujących zarówno rozwiązania komercyjne, jak i otwarte:
+
+\begin{itemize}
+    \item \textbf{GPT-4.1} -- model rodziny OpenAI, wykorzystywany jako mocny punkt odniesienia dla jakości odpowiedzi i uzasadnień \cite{openai2024gpt4},
+    \item \textbf{Gemini 2.5 Pro} -- model Google, użyty jako reprezentant zaawansowanych modeli chmurowych,
+    \item \textbf{Mistral 7B} -- model open-source o relatywnie mniejszej liczbie parametrów, wykorzystywany jako punkt porównania dla lżejszych architektur,
+    \item \textbf{Llama Cloud} -- model z rodziny Llama udostępniany przez usługę chmurową \cite{touvron2023llama},
+    \item \textbf{Bielik 2 (4-bit)} -- model ukierunkowany na język polski, istotny z punktu widzenia lokalnego charakteru danych \cite{bielik2024,piotrowski2024evaluating}.
+\end{itemize}
+
+Dobór modeli pozwala porównać zachowanie rozwiązań ogólnego przeznaczenia z modelem polskojęzycznym w zadaniu, w którym lokalny kontekst językowy ma realne znaczenie.
+
+\section{Frontend Angular}
+
+Frontend został przygotowany w Angularze 21 jako aplikacja oparta o \textit{standalone components}. Główna konfiguracja korzysta z routingu, klienta HTTP, renderowania hydracyjnego oraz biblioteki PrimeNG do budowy komponentów interfejsu. Routing obejmuje ścieżki \texttt{/}, \texttt{/pl} i \texttt{/en}, a więc aplikacja wspiera wariant wielojęzyczny.
+
+Strona główna agreguje komponent nagłówka, formularz analizatora, sekcję wyników, panel informacyjny oraz stopkę. Za komunikację z backendem odpowiada serwis \texttt{ApiService}, który wysyła żądanie \texttt{POST /analyze}. Dodatkowe serwisy odpowiadają za zarządzanie motywem jasnym i ciemnym oraz za preferencję językową użytkownika. Zastosowany podział na komponenty i serwisy upraszcza testowanie i dalszy rozwój aplikacji.
+
+\section{Opis działania aplikacji}
+
+Aplikacja została przygotowana tak, aby umożliwiać szybkie przejście od wyboru modelu do uzyskania pełnego wyniku z uzasadnieniem. Interfejs zawiera pola wyboru modelu, adresu nadawcy, tytułu wiadomości oraz właściwej treści e-maila. Następnie użytkownik uruchamia analizę i otrzymuje wynik wraz z opisem argumentacji modelu.
+
+W tej sekcji przedstawiono dwie przykładowe ścieżki działania aplikacji oparte na załączonych materiałach graficznych. Pierwsza ścieżka pokazuje analizę wiadomości phishingowej przy użyciu modelu GPT-4.1, druga natomiast analizę wiadomości legalnej z użyciem modelu Llama Cloud. Dzięki temu można zobaczyć zarówno wariant wykrycia zagrożenia, jak i poprawne rozpoznanie bezpiecznej wiadomości.
+
+\subsection{Ścieżka 1: analiza wiadomości phishingowej z użyciem GPT-4.1}
+
+Pierwszy scenariusz rozpoczyna się od uruchomienia formularza i wyboru modelu GPT-4.1 z listy dostępnych opcji. Następnie użytkownik wprowadza wiadomość podszywającą się pod e-Urząd Skarbowy i uruchamia analizę. W czasie oczekiwania pola formularza są blokowane, a przycisk analizy przechodzi do stanu ładowania. Po zakończeniu procesu aplikacja prezentuje wynik \textit{PHISHING} wraz z uzasadnieniem wskazującym między innymi nieoficjalną domenę, presję czasu i próbę wyłudzenia danych.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/gpt-4.1-legit/2.png}
+    \caption{Wybór modelu GPT-4.1 w aplikacji}
+    \label{fig:gpt-path-select}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/gpt-4.1-legit/3.png}
+    \caption{Uzupełniony formularz wiadomości phishingowej przed wysłaniem do analizy}
+    \label{fig:gpt-path-form}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/gpt-4.1-legit/4.png}
+    \caption{Stan ładowania podczas wykonywania analizy przez model GPT-4.1}
+    \label{fig:gpt-path-loading}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/gpt-4.1-legit/5.png}
+    \caption{Wynik analizy wiadomości phishingowej w ścieżce z modelem GPT-4.1}
+    \label{fig:gpt-path-result}
+\end{figure}
+
+\subsection{Ścieżka 2: analiza wiadomości legalnej z użyciem Llama Cloud}
+
+Drugi scenariusz ilustruje sytuację odwrotną: użytkownik wybiera model Llama Cloud, wprowadza wiadomość administracyjną od wspólnoty mieszkaniowej i uruchamia analizę. Podobnie jak wcześniej, interfejs przechodzi przez stan wypełnionego formularza i stan oczekiwania. Wynik końcowy wskazuje klasę \textit{LEGIT} oraz zawiera uzasadnienie zwracające uwagę na spójność domeny, brak żądań haseł i brak presji czasu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/llama-phising/2a.png}
+    \caption{Wybór modelu Llama Cloud w aplikacji}
+    \label{fig:llama-path-select}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/llama-phising/3a.png}
+    \caption{Uzupełniony formularz wiadomości legalnej przed wysłaniem do analizy}
+    \label{fig:llama-path-form}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/llama-phising/4a.png}
+    \caption{Stan ładowania podczas wykonywania analizy przez model Llama Cloud}
+    \label{fig:llama-path-loading}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{aplication-paths/llama-phising/5a.png}
+    \caption{Wynik analizy wiadomości legalnej w ścieżce z modelem Llama Cloud}
+    \label{fig:llama-path-result}
+\end{figure}
+
+\chapter{Eksperymenty i wyniki}
+
+\section{Konfiguracja eksperymentów}
+
+Eksperyment przeprowadzono na zbiorze 500 wiadomości zapisanych w pliku \texttt{data.json}. Każdy z pięciu modeli został uruchomiony na tym samym zbiorze. Wyniki zapisano do osobnych raportów JSON w katalogu \texttt{reports}. Ocenę przeprowadzono na podstawie liczby poprawnych i błędnych klasyfikacji oraz macierzy pomyłek.
+
+Ważnym elementem metodologii jest to, że wszystkie modele analizowały pole \texttt{text}, a więc treść wiadomości. Tytuł i nadawca pozostawały częścią danych, lecz nie były wejściem klasyfikatora w skryptach porównawczych. Dzięki temu porównanie miało jednolity charakter, choć równocześnie ograniczało zakres informacji dostępnych modelowi.
+
+\section{Analiza wyników}
+
+Tabela \ref{tab:model-results} przedstawia zbiorcze wyniki uzyskane przez wszystkie modele. Widać wyraźnie, że najlepsze rezultaty osiągnęły Bielik 2 (4-bit), Gemini 2.5 Pro oraz GPT-4.1. Dwa słabsze modele -- Mistral 7B i Llama Cloud -- również rozpoznawały wiadomości phishingowe bardzo skutecznie, ale jednocześnie częściej oznaczały wiadomości poprawne jako podejrzane.
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{l r r r r r}
+        \toprule
+        Model & Poprawne & Błędne & Accuracy [\%] & FP & FN \\
+        \midrule
+        Bielik 2 (4-bit) & 500 & 0 & 100.0 & 0 & 0 \\
+        Gemini 2.5 Pro & 488 & 12 & 97.6 & 12 & 0 \\
+        GPT-4.1 & 478 & 22 & 95.6 & 22 & 0 \\
+        Llama Cloud & 366 & 132 & 73.49 & 132 & 0 \\
+        Mistral 7B & 357 & 143 & 71.4 & 143 & 0 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Porównanie wyników modeli na zbiorze eksperymentalnym}
+    \label{tab:model-results}
+\end{table}
+
+Analiza macierzy pomyłek pokazuje wspólną cechę wszystkich modeli: w raportach nie odnotowano przypadków \textit{false negative}, czyli sytuacji, w których wiadomość phishingowa zostałaby uznana za legalną. Oznacza to bardzo wysoką czułość wobec zagrożeń. Jednocześnie różnice pomiędzy modelami wynikają przede wszystkim z liczby \textit{false positive}, a więc z nadmiernej ostrożności wobec wiadomości poprawnych.
+
+Najbardziej wyraźnie widać to w przypadku Llama Cloud i Mistral 7B. Modele te klasyfikowały wszystkie lub prawie wszystkie wiadomości phishingowe poprawnie, lecz równocześnie miały trudność z zachowaniem równowagi przy wiadomościach legalnych. W praktyce oznacza to skłonność do \textit{nadmiernej detekcji} -- system jest bezpieczny w sensie wychwytywania podejrzanych treści, ale generuje dużo fałszywych alarmów.
+
+W raporcie Llama Cloud odnotowano dodatkowo dwa przypadki błędów wykonania, przez co oceniono 498 z 500 wiadomości. Średni czas odpowiedzi tego modelu wyniósł około 19069.92 ms na próbkę, co czyniło go również rozwiązaniem zdecydowanie wolniejszym od wariantów używanych do szybkiej analizy interaktywnej.
+
+\section{Porównanie modeli}
+
+Z perspektywy końcowej można wyróżnić trzy grupy modeli:
+
+\begin{itemize}
+    \item \textbf{modele najwyższej skuteczności}: Bielik 2 (4-bit), Gemini 2.5 Pro i GPT-4.1,
+    \item \textbf{modele o wysokiej czułości, ale niższej precyzji}: Llama Cloud i Mistral 7B,
+    \item \textbf{model najlepiej dopasowany do badanego języka}: Bielik 2 (4-bit), który osiągnął najlepszy wynik na całym zbiorze.
+\end{itemize}
+
+Wynik Bielika jest szczególnie interesujący, ponieważ badanie dotyczyło polskojęzycznych wiadomości. Sugeruje to, że dostosowanie modelu do lokalnego języka i realiów komunikacyjnych może mieć istotne znaczenie. Gemini 2.5 Pro i GPT-4.1 osiągnęły również bardzo wysokie rezultaty, co potwierdza przydatność dużych modeli ogólnego przeznaczenia w analizie bezpieczeństwa treści.
+
+Jednocześnie wyniki pokazują, że sama zdolność do wykrycia phishingu nie jest wystarczająca do oceny jakości modelu. W systemie rzeczywistym równie ważna jest zdolność rozpoznania, że wiadomość legalna pozostaje legalna. Z tego punktu widzenia liczba fałszywych alarmów ma duże znaczenie dla akceptowalności rozwiązania przez użytkowników.
+
+\chapter{Dyskusja i wnioski}
+
+\section{Interpretacja wyników}
+
+Uzyskane wyniki wskazują, że duże modele językowe mogą być skutecznym narzędziem wspierającym wykrywanie phishingu, zwłaszcza gdy analiza obejmuje pełną treść wiadomości i pozwala formułować uzasadnienie decyzji. Najlepsze modele nie tylko trafnie przypisywały etykietę, ale także identyfikowały kluczowe cechy oszustwa, takie jak: nieoficjalne domeny, żądanie podania kodu SMS, presja czasu, niespójność relacji nadawcy do treści czy pozorna formalność komunikatu.
+
+Wysoka skuteczność wszystkich modeli wobec próbek phishingowych sugeruje, że przygotowany zbiór zawierał wyraźne i czytelne wskaźniki zagrożenia. Z kolei różnice w liczbie \textit{false positive} pokazują, które modele radzą sobie lepiej z rozumieniem neutralnych i administracyjnych wiadomości legalnych. Szczególnie ważne są tu przypadki, w których wiadomość zawiera link lub odniesienie do portalu, ale jednocześnie wyraźnie informuje, że nie wymaga podawania hasła. To właśnie takie subtelności różnicują modele lepiej rozumiejące kontekst od modeli bardziej reaktywnych na pojedyncze sygnały ostrzegawcze.
+
+\section{Ograniczenia pracy}
+
+Praca ma kilka ograniczeń. Po pierwsze, zbiór danych został zbudowany jako własny benchmark, inspirowany publicznymi bazami i wzorcami wiadomości, co oznacza, że nie jest to surowy korpus pochodzący bezpośrednio z rzeczywistych skrzynek pocztowych. Po drugie, eksperyment dotyczył przede wszystkim treści wiadomości, bez pełnej analizy nagłówków, reputacji domen, załączników i metadanych transportowych. Po trzecie, dla porównania zastosowano pojedynczy schemat wywołania modeli, bez szerokiego strojenia promptów specyficznego dla każdego wariantu.
+
+Ograniczeniem praktycznym jest także zależność części modeli od środowiska wykonawczego lub zewnętrznych usług. W badaniu porównano gotowe raporty uruchomień, lecz przy długofalowym wdrożeniu należałoby dodatkowo uwzględnić koszt, opóźnienia odpowiedzi, stabilność usług oraz możliwość powtarzalnego uruchamiania wszystkich modeli w tej samej infrastrukturze.
+
+\section{Kierunki dalszych badań}
+
+Naturalnym kierunkiem dalszych badań jest rozszerzenie zbioru o wiadomości trudniejsze i bardziej zbliżone do \textit{spear phishingu}, czyli komunikaty lepiej spersonalizowane i mniej oczywiste. Drugim kierunkiem jest włączenie dodatkowych sygnałów wejściowych, takich jak domena nadawcy, nagłówki techniczne lub cechy odsyłaczy URL. Trzecim obszarem rozwoju może być budowa systemu hybrydowego, łączącego modele językowe z klasycznymi regułami bezpieczeństwa lub reputacją domen.
+
+W przyszłości warto także przeprowadzić badanie porównawcze na szerszym zestawie modeli polskojęzycznych oraz sprawdzić, w jakim stopniu wyniki zależą od konkretnego promptu klasyfikacyjnego. Interesującym rozszerzeniem byłaby również ocena jakości samych uzasadnień modeli, a nie tylko końcowej etykiety.
+
+\printbibliography[heading=bibnumbered,title={Bibliografia}]
+
+\chapter{Aneksy / materiały dodatkowe}
+
+\section{Kody źródłowe}
+
+Kod źródłowy projektu został podzielony na część backendową, frontendową i materiały pomocnicze. Najważniejsze elementy implementacji znajdują się w następujących lokalizacjach:
+
+\begin{itemize}
+    \item \texttt{phishing-email-analyzer/backend/main.py} -- główny punkt wejścia backendu FastAPI,
+    \item \texttt{phishing-email-analyzer/backend/models/} -- adaptery poszczególnych modeli klasyfikacyjnych,
+    \item \texttt{phishing-email-analyzer/backend/test\_all\_models.py} -- skrypt do porównawczych uruchomień modeli,
+    \item \texttt{phishing-email-analyzer/frontend/src/app/} -- komponenty, routing i serwisy aplikacji Angular,
+    \item \texttt{data/data.json} -- zbiór danych wykorzystany w eksperymentach.
+\end{itemize}
+
+Poniżej zamieszczono skrócony przykład modelu danych wejściowych używanego przez backend:
+
+\begin{lstlisting}[language=Python,caption={Przykładowa struktura żądania wejściowego w backendzie}]
+class EmailRequest(BaseModel):
+    email_text: str
+    model_name: str = "gpt-4.1"
+    sender: str
+    title: str
+\end{lstlisting}
+
+Poniższy fragment pokazuje uproszczony interfejs odpowiedzi wykorzystywany przez frontend:
+
+\begin{lstlisting}[language=Java,caption={Przykładowa struktura wyniku analizy w warstwie frontendowej}]
+export interface AnalysisResult {
+  model: string;
+  prediction: 'phishing' | 'legit';
+  reason: string;
+  timestamp: string;
+  sender: string;
+  title: string;
+  response_time_ms: number;
+}
+\end{lstlisting}
+
+\section{Raporty z uruchomień modeli}
+
+W katalogu \texttt{reports} zapisano wyniki pełnych przebiegów dla wszystkich analizowanych modeli. Obejmują one następujące pliki:
+
+\begin{itemize}
+    \item \texttt{bielik2\_(4bit)\_report\_20260311\_221738.json},
+    \item \texttt{gemini\_2.5-pro\_report\_20260306\_225329.json},
+    \item \texttt{gpt\_4.1\_report\_20260307\_151132.json},
+    \item \texttt{llama\_cloud\_report\_20260307\_224133.json},
+    \item \texttt{mistral\_report\_20260307\_044753.json}.
+\end{itemize}
+
+Raporty zawierają metryki zbiorcze, wyniki jednostkowe dla poszczególnych wiadomości oraz w wybranych przypadkach dodatkowe informacje takie jak macierz pomyłek czy średni czas odpowiedzi. Dzięki temu możliwe jest zarówno porównanie ilościowe, jak i jakościowa analiza powodów poprawnych oraz błędnych klasyfikacji.
+
+\end{document}
