@@ -225,6 +225,75 @@ Opracowany system składa się z trzech głównych warstw:
 
 Uzupełnieniem całości jest katalog modeli, w którym każdy wariant klasyfikatora posiada własny adapter, a także zestaw raportów JSON dokumentujących wyniki pełnych uruchomień eksperymentalnych.
 
+\subsection{Struktura katalogów frontend i backend}
+
+W celu lepszej czytelności architektury przedstawiono oddzielnie strukturę warstwy frontendowej i backendowej. Drzewa katalogów pokazują najważniejsze elementy organizacyjne wykorzystywane podczas implementacji, testowania i uruchamiania systemu.
+
+\begin{figure}[H]
+    \centering
+    \footnotesize
+    \begin{forest}
+        for tree={
+            grow'=0,
+            parent anchor=east,
+            child anchor=west,
+            anchor=west,
+            edge={-stealth},
+            l sep=10pt,
+            s sep=6pt,
+            inner sep=1pt,
+            align=left
+        }
+        [frontend/
+            [src/
+                [app/
+                    [components/]
+                    [pages/]
+                    [routes/]
+                    [services/]
+                    [pipes/]
+                    [utils/]
+                ]
+                [locale/]
+                [styles/]
+            ]
+            [e2e/]
+            [public/]
+            [package.json]
+            [angular.json]
+        ]
+    \end{forest}
+    \caption{Uproszczona struktura katalogów warstwy frontendowej (Angular)}
+    \label{fig:frontend-tree}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \footnotesize
+    \begin{forest}
+        for tree={
+            grow'=0,
+            parent anchor=east,
+            child anchor=west,
+            anchor=west,
+            edge={-stealth},
+            l sep=10pt,
+            s sep=6pt,
+            inner sep=1pt,
+            align=left
+        }
+        [backend/
+            [models/]
+            [main.py]
+            [test_all_models.py]
+            [shuffle_data.py]
+            [requirements.txt]
+        ]
+    \end{forest}
+    \caption{Uproszczona struktura katalogów warstwy backendowej (FastAPI)}
+    \label{fig:backend-tree}
+\end{figure}
+
 \section{Backend FastAPI}
 
 Backend został zaimplementowany w języku Python z użyciem frameworka FastAPI. Plik \texttt{backend/main.py} odpowiada za uruchomienie aplikacji, dynamiczne ładowanie adapterów modeli oraz obsługę żądań HTTP. Zastosowano mechanizm dynamicznego importu modułów z katalogu \texttt{models}, co upraszcza rozszerzanie systemu o kolejne modele bez przebudowy głównej logiki serwera.
