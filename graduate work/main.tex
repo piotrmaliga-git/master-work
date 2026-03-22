@@ -411,6 +411,118 @@ Drugi scenariusz ilustruje sytuację odwrotną: użytkownik wybiera model Llama 
     \label{fig:llama-path-result}
 \end{figure}
 
+\chapter{Metodologia eksperymentu}
+
+\section{Cel i logika procedury badawczej}
+
+Celem metodologii było zapewnienie porównywalności wyników pomiędzy modelami przy jednoczesnym ograniczeniu wpływu czynników ubocznych, takich jak kolejność próbek, niestabilność odpowiedzi API czy różnice w sposobie raportowania. Procedurę zaprojektowano jako sekwencję powtarzalnych kroków, które można odtworzyć dla każdego modelu bez zmiany struktury danych i bez zmiany kryteriów oceny.
+
+Podejście przyjęte w pracy ma charakter benchmarkowy. Oznacza to, że porównywano gotowe modele w identycznym zadaniu klasyfikacji binarnej, bez ich dodatkowego trenowania na zbiorze ewaluacyjnym. Taka decyzja metodologiczna umożliwia bezpośrednią odpowiedź na pytanie praktyczne: jak zachowują się dostępne modele w rzeczywistym scenariuszu analizy treści wiadomości e-mail.
+
+\section{Pipeline eksperymentu krok po kroku}
+
+W badaniu zastosowano jednolity pipeline obejmujący sześć etapów:
+
+\begin{enumerate}
+    \item \textbf{Przygotowanie danych} -- standaryzacja struktury rekordów, etykiet i kategorii.
+    \item \textbf{Tasowanie i renumeracja} -- losowanie kolejności próbek przy użyciu skryptu \texttt{shuffle\_data.py}.
+    \item \textbf{Uruchomienie modelu} -- wykonanie klasyfikacji dla całego zbioru przy jednolitym schemacie wejścia/wyjścia.
+    \item \textbf{Walidacja predykcji} -- porównanie \texttt{prediction} z \texttt{ground\_truth} na poziomie każdej próbki.
+    \item \textbf{Agregacja metryk} -- obliczenie metryk globalnych oraz macierzy pomyłek.
+    \item \textbf{Raportowanie} -- zapis wyników jednostkowych i zbiorczych do raportów JSON.
+\end{enumerate}
+
+Tak zdefiniowany pipeline zapewnia spójność warunków porównania. Różnice w wynikach można więc interpretować głównie jako różnice jakości modeli, a nie efekt uboczny różnej procedury uruchomieniowej.
+
+\section{Przygotowanie i kontrola jakości danych}
+
+Zbiór wejściowy został zapisany w formacie JSON i zawierał rekordy o wspólnej strukturze pól: \texttt{id}, \texttt{title}, \texttt{sender}, \texttt{text}, \texttt{ground\_truth}, \texttt{category}. Każda próbka była mapowana do jednej z dwóch klas: \texttt{phishing} lub \texttt{legit}. Taka standaryzacja była warunkiem koniecznym do poprawnej walidacji predykcji i porównywania metryk między modelami.
+
+W procesie kontroli jakości danych sprawdzano:
+
+\begin{itemize}
+    \item poprawność składni JSON i zgodność typów danych,
+    \item kompletność wymaganych pól w rekordzie,
+    \item spójność etykiet referencyjnych,
+    \item rozkład klas i kategorii tematycznych,
+    \item poprawność kodowania znaków (język polski, znaki diakrytyczne).
+\end{itemize}
+
+Istotnym elementem metodologicznym było zachowanie równowagi klas (250 \texttt{phishing}, 250 \texttt{legit}), co zmniejsza ryzyko pozornie wysokiej dokładności wynikającej z dominacji jednej klasy.
+
+\section{Tasowanie próbek i kontrola efektu kolejności}
+
+W pracy zastosowano skrypt \texttt{phishing-email-analyzer/backend/shuffle\_data.py}, którego zadaniem było losowe przetasowanie rekordów i ponowna numeracja identyfikatorów. Motywacja była bezpośrednio metodologiczna: ograniczenie ryzyka, że powtarzalna kolejność wejścia wpłynie na przebieg ewaluacji lub na stabilność odpowiedzi modelu.
+
+Z punktu widzenia wiarygodności eksperymentu tasowanie pełniło trzy role:
+
+\begin{itemize}
+    \item ograniczało wpływ sekwencyjnego układu próbek (np. grupowania podobnych kategorii),
+    \item zmniejszało ryzyko niejawnego „dopasowania się” procesu inferencji do wzorca kolejności,
+    \item poprawiało porównywalność serii uruchomień wykonywanych w różnych momentach czasu.
+\end{itemize}
+
+Chociaż klasyfikacja pojedynczej wiadomości nie zależy formalnie od innych rekordów, w praktyce operacyjnej (cache, limity API, retry, timeouty, chwilowe obciążenie usługi) uporządkowanie zbioru może wpływać na jakość i kompletność przebiegu. Z tego powodu procedura tasowania została utrzymana jako element standardowy.
+
+\section{Procedura uruchomienia modeli}
+
+Każdy model był uruchamiany na tym samym zbiorze ewaluacyjnym, przy wspólnym schemacie wejścia i porównywalnym formacie odpowiedzi. W warstwie backendowej zastosowano adaptery modeli, które abstrahowały szczegóły implementacyjne i zapewniały ujednolicony kontrakt: etykieta predykcji oraz uzasadnienie tekstowe.
+
+W trakcie uruchomienia rejestrowano dla każdej próbki:
+
+\begin{itemize}
+    \item identyfikator rekordu i metadane (kategoria, nadawca, tytuł),
+    \item etykietę referencyjną \texttt{ground\_truth},
+    \item predykcję modelu \texttt{prediction},
+    \item informację o poprawności klasyfikacji \texttt{is\_correct},
+    \item uzasadnienie modelu (jeśli dostępne),
+    \item czas odpowiedzi i ewentualne błędy wykonania.
+\end{itemize}
+
+Przyjęto, że metryki końcowe liczone są na podstawie rekordów skutecznie przetworzonych. W przypadku modeli, dla których wystąpiły błędy wykonania, raport zawierał także liczbę próbek pominiętych lub zakończonych błędem.
+
+\section{Walidacja i metryki}
+
+Walidacja polegała na bezpośrednim porównaniu wartości \texttt{prediction} i \texttt{ground\_truth}. Dla każdego modelu budowano macierz pomyłek z wartościami: \textit{TP}, \textit{TN}, \textit{FP}, \textit{FN}. Następnie obliczano metryki globalne i pomocnicze.
+
+W pracy stosowano następujące miary:
+
+\begin{align*}
+Accuracy &= \frac{TP + TN}{TP + TN + FP + FN} \\
+Precision &= \frac{TP}{TP + FP} \\
+Recall &= \frac{TP}{TP + FN} \\
+F1 &= 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}
+\end{align*}
+
+W interpretacji wyników duży nacisk położono na \textit{false positive}, ponieważ ten typ błędu bezpośrednio obniża użyteczność systemu w codziennym zastosowaniu. Użytkownik końcowy, otrzymując zbyt wiele fałszywych alarmów, może tracić zaufanie do narzędzia nawet wtedy, gdy wykrywalność realnych zagrożeń pozostaje wysoka.
+
+\section{Raportowanie i struktura artefaktów}
+
+Każde pełne uruchomienie kończyło się zapisem raportu JSON do katalogu \texttt{reports}. Raport zawierał:
+
+\begin{itemize}
+    \item metadane przebiegu (model, czas, liczba próbek),
+    \item metryki zbiorcze,
+    \item w wybranych raportach macierz pomyłek i metryki klasowe,
+    \item listę wyników jednostkowych dla poszczególnych wiadomości,
+    \item informacje o błędach wykonania i czasie odpowiedzi.
+\end{itemize}
+
+Taki format umożliwił dwie równoległe ścieżki analizy: ilościową (metryki, porównanie modeli, analiza per-kategoria) oraz jakościową (przegląd uzasadnień i analiza błędów \textit{false positive}). Dodatkowo raporty stanowią trwały artefakt badawczy, który można ponownie przetwarzać bez konieczności kosztownego uruchamiania modeli.
+
+\section{Kontrola powtarzalności i ograniczenia metodologiczne}
+
+W celu zwiększenia powtarzalności badań utrzymywano stałą strukturę danych, stały protokół ewaluacji oraz jednolity sposób zapisu wyników. Mimo to należy wskazać czynniki, które mogą wpływać na replikowalność:
+
+\begin{itemize}
+    \item zmienność środowiska usług chmurowych (latencja, chwilowe przeciążenia, limity),
+    \item różnice w odpowiedziach modeli generatywnych między uruchomieniami,
+    \item okazjonalne błędy wykonania i timeouty,
+    \item ewolucja samych modeli po stronie dostawców.
+\end{itemize}
+
+Z tego powodu wyniki należy interpretować jako wiarygodny obraz porównawczy dla badanego momentu i konfiguracji eksperymentu, a nie jako niezmienny ranking absolutny. Zastosowane procedury (tasowanie, walidacja na poziomie próbki, zapis pełnych raportów) istotnie ograniczają jednak ryzyko błędnych wniosków i zwiększają przejrzystość badania.
+
 \chapter{Eksperymenty i wyniki}
 
 \section{Konfiguracja eksperymentów}
@@ -448,6 +560,91 @@ Analiza macierzy pomyłek pokazuje wspólną cechę wszystkich modeli: w raporta
 Najbardziej wyraźnie widać to w przypadku Llama Cloud i Mistral 7B. Modele te klasyfikowały wszystkie lub prawie wszystkie wiadomości phishingowe poprawnie, lecz równocześnie miały trudność z zachowaniem równowagi przy wiadomościach legalnych. W praktyce oznacza to skłonność do \textit{nadmiernej detekcji} -- system jest bezpieczny w sensie wychwytywania podejrzanych treści, ale generuje dużo fałszywych alarmów.
 
 W raporcie Llama Cloud odnotowano dodatkowo dwa przypadki błędów wykonania, przez co oceniono 498 z 500 wiadomości. Średni czas odpowiedzi tego modelu wyniósł około 19069.92 ms na próbkę, co czyniło go również rozwiązaniem zdecydowanie wolniejszym od wariantów używanych do szybkiej analizy interaktywnej.
+
+\subsection{Analiza błędów (\textit{error analysis})}
+
+W celu pogłębienia analizy jakościowej wyodrębniono przypadki \textit{false positive} (wiadomość legalna oznaczona jako phishing) ze wszystkich raportów modeli. Łącznie zidentyfikowano 309 takich przypadków: 143 dla Mistral 7B, 132 dla Llama Cloud, 22 dla GPT-4.1, 12 dla Gemini 2.5 Pro i 0 dla Bielik 2 (4-bit). W tabeli \ref{tab:fp-analysis} przedstawiono 25 reprezentatywnych przykładów, dobranych tak, aby objąć różne modele i kategorie tematyczne.
+
+\begin{center}
+\scriptsize
+\begin{longtable}{r l r l p{3.2cm} p{4.8cm}}
+\caption{Reprezentatywne przypadki \textit{false positive} wraz z komentarzem interpretacyjnym} \label{tab:fp-analysis} \\
+\toprule
+Lp. & Model & ID & Kategoria & Przypadek (skrót) & Dlaczego model mógł się pomylić \\
+\midrule
+\endfirsthead
+\toprule
+Lp. & Model & ID & Kategoria & Przypadek (skrót) & Dlaczego model mógł się pomylić \\
+\midrule
+\endhead
+1 & Llama Cloud & 23 & community & Komunikat o przeglądzie instalacji & Nadmierna ostrożność wobec linku i formalnego tonu administracyjnego. \\
+2 & Llama Cloud & 44 & community & Komunikat o przeglądzie instalacji & Błędna interpretacja komunikatu wspólnoty jako próby wymuszenia działania. \\
+3 & Llama Cloud & 119 & community & Komunikat o przeglądzie instalacji & Sygnalizacja „panelu” potraktowana jako ryzyko mimo zgodnej domeny. \\
+4 & Llama Cloud & 129 & community & Komunikat o przeglądzie instalacji & Przewaga heurystyki bezpieczeństwa nad analizą kontekstu lokalnego. \\
+5 & Llama Cloud & 41 & education & Harmonogram zajęć na kolejny zjazd & Link do portalu uczelni potraktowany jako potencjalnie podejrzany. \\
+6 & Llama Cloud & 43 & education & Harmonogram zajęć na kolejny zjazd & Brak rozpoznania typowego wzorca wiadomości dziekanatu. \\
+7 & Llama Cloud & 57 & education & Harmonogram zajęć na kolejny zjazd & Nadmierne karanie wiadomości z instrukcją przejścia do portalu. \\
+8 & Llama Cloud & 73 & education & Harmonogram zajęć na kolejny zjazd & Neutralny komunikat został sklasyfikowany jak alert bezpieczeństwa. \\
+9 & Llama Cloud & 3 & event & Bilet i agenda wydarzenia & Sam fakt obecności URL zwiększył ryzyko w ocenie modelu. \\
+10 & Llama Cloud & 13 & event & Bilet i agenda wydarzenia & Model zignorował antyphishingowy fragment o braku żądania hasła. \\
+11 & Llama Cloud & 16 & event & Bilet i agenda wydarzenia & Błędna kalibracja progu dla wiadomości konferencyjnych. \\
+12 & Llama Cloud & 35 & event & Bilet i agenda wydarzenia & Wysoka czułość bezpieczeństwa kosztem precyzji dla klasy \textit{legit}. \\
+13 & Mistral 7B & 29 & health & Przypomnienie o wizycie kontrolnej & Bardzo konserwatywna klasyfikacja treści medycznych z linkiem portalowym. \\
+14 & Mistral 7B & 36 & health & Przypomnienie o wizycie kontrolnej & Niska zdolność rozróżniania przypomnienia od ataku podszywającego. \\
+15 & Mistral 7B & 56 & health & Przypomnienie o wizycie kontrolnej & Heurystyka „konto + portal” dominowała nad semantyką wiadomości. \\
+16 & Mistral 7B & 98 & health & Przypomnienie o wizycie kontrolnej & Model klasyfikuje defensywnie komunikację z sektora zdrowia. \\
+17 & Mistral 7B & 5 & invoice & Faktura za usługi księgowe & Kategoria fakturowa bywa mylona z kampaniami BEC/phishing finansowy. \\
+18 & Mistral 7B & 7 & invoice & Faktura za usługi księgowe & Sygnał „faktura + portal klienta” zbyt silnie podniósł ocenę ryzyka. \\
+19 & Mistral 7B & 21 & invoice & Faktura za usługi księgowe & Ograniczona precyzja dla legalnych wiadomości księgowych. \\
+20 & Mistral 7B & 28 & invoice & Faktura za usługi księgowe & Treść biznesowa została odczytana jako próba wyłudzenia płatności. \\
+21 & Mistral 7B & 4 & meeting & Podsumowanie sprintu i plan tygodnia & Link do dokumentacji projektu potraktowany jako artefakt phishingowy. \\
+22 & Mistral 7B & 120 & meeting & Podsumowanie sprintu i plan tygodnia & Trudność w rozpoznaniu standardowej komunikacji wewnętrznej IT. \\
+23 & Mistral 7B & 159 & meeting & Podsumowanie sprintu i plan tygodnia & Model nie odróżnił „taskowego” tonu od presji socjotechnicznej. \\
+24 & Mistral 7B & 176 & meeting & Podsumowanie sprintu i plan tygodnia & Nadreprezentacja fałszywych alarmów w wiadomościach organizacyjnych. \\
+25 & Gemini 2.5 Pro & 336 & shopping & Potwierdzenie wysyłki zamówienia & Pojedyncza pomyłka graniczna; prawdopodobnie ostrożność wobec logistyki i linku. \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+Zestawione przykłady wskazują, że dominującym mechanizmem błędu była \textit{nadmierna detekcja} legalnej komunikacji zawierającej odsyłacz do panelu, portalu lub dokumentacji. Największa koncentracja błędów dotyczyła kategorii o naturalnie wysokiej „formalności bezpieczeństwa” (np. \textit{health}, \textit{invoice}, \textit{work}, \textit{community}).
+
+\subsection{Analiza per-kategoria}
+
+Oprócz metryk globalnych przeprowadzono ocenę skuteczności modeli w podziale na kategorie tematyczne. W tabeli \ref{tab:per-category-accuracy} przedstawiono dokładność (\%) dla każdej kategorii osobno. Ostatnia kolumna zawiera łączną liczbę \textit{false positive} w danej kategorii (suma dla wszystkich modeli).
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \begin{tabular}{l r r r r r r}
+        \toprule
+        Kategoria & Bielik & Gemini & GPT-4.1 & Llama & Mistral & Suma FP \\
+        \midrule
+        account & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        banking & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        community & 100.0 & 100.0 & 100.0 & 25.9 & 66.7 & 29 \\
+        crypto & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        delivery & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        education & 100.0 & 100.0 & 100.0 & 50.0 & 89.3 & 17 \\
+        event & 100.0 & 100.0 & 100.0 & 27.3 & 54.5 & 39 \\
+        gaming & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        health & 100.0 & 100.0 & 100.0 & 41.7 & 0.0 & 38 \\
+        hr & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        invoice & 100.0 & 97.5 & 62.5 & 47.5 & 47.5 & 58 \\
+        meeting & 100.0 & 100.0 & 100.0 & 68.2 & 68.2 & 14 \\
+        newsletter & 100.0 & 100.0 & 100.0 & 95.7 & 100.0 & 1 \\
+        shopping & 100.0 & 84.2 & 100.0 & 15.8 & 0.0 & 38 \\
+        social & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        streaming & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        tax & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 0 \\
+        travel & 100.0 & 70.4 & 74.1 & 77.8 & 29.6 & 40 \\
+        work & 100.0 & 100.0 & 100.0 & 65.4 & 0.0 & 35 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Dokładność modeli w podziale na kategorie tematyczne oraz suma \textit{false positive} (na podstawie raportów)}
+    \label{tab:per-category-accuracy}
+\end{table}
+
+Analiza per-kategoria potwierdza trzy główne trendy. Po pierwsze, kategorie typowo phishingowe i jednoznaczne semantycznie (np. \textit{banking}, \textit{tax}, \textit{social}, \textit{streaming}) były rozpoznawane bardzo stabilnie przez wszystkie modele. Po drugie, największe różnice między modelami pojawiają się w kategoriach legalnej komunikacji operacyjnej, zwłaszcza \textit{invoice}, \textit{travel}, \textit{health}, \textit{shopping} i \textit{work}. Po trzecie, modele o niższej dokładności globalnej (Llama Cloud i Mistral 7B) wykazują dużą zmienność między kategoriami, co wskazuje na silną zależność od kontekstu domenowego wiadomości.
 
 \section{Porównanie modeli}
 
