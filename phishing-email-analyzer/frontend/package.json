@@ -1,6 +1,6 @@
 {
   "name": "phishing-email-analyzer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --configuration=en",
@@ -21,9 +21,9 @@
     "serve:ssr:app": "node dist/app/server/server.mjs",
     "format": "prettier --write \"src/**/*.{ts,html,css,json}\" \".prettierrc\" \"angular.json\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\" \".prettierrc\" \"angular.json\"",
-    "prepare": "husky ../../.husky",
-    "test:mutation": "stryker run",
-    "test:mutation:dry": "stryker run --dryRunOnly"
+    "mutate": "stryker run",
+    "mutate:dry": "stryker run --dryRunOnly",
+    "prepare": "husky ../../.husky"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
