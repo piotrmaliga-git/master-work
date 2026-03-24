@@ -80,7 +80,7 @@ jobs:
         run: npm ci
 
       - name: Mutation tests
-        run: npm run test:mutation
+        run: npm run mutate
 
   e2e-tests:
     name: E2E tests
