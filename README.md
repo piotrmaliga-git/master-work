@@ -1,5 +1,5 @@
 # Master's work
-# Topic: Comparative analysis of the effectiveness of language models in detecting phishing messages
+## Comparative analysis of the effectiveness of language models in detecting phishing messages
 
 This repository combines two closely related parts of a master's thesis project:
 
@@ -314,7 +314,7 @@ The project can be used both as a local phishing-email analysis tool and as an e
 ## Table of Contents
 
 - [Master's work](#masters-work)
-- [Topic: Comparative analysis of the effectiveness of language models in detecting phishing messages](#topic-comparative-analysis-of-the-effectiveness-of-language-models-in-detecting-phishing-messages)
+  - [Comparative analysis of the effectiveness of language models in detecting phishing messages](#comparative-analysis-of-the-effectiveness-of-language-models-in-detecting-phishing-messages)
   - [Repository Structure](#repository-structure)
   - [Main Application](#main-application)
     - [Frontend](#frontend)
