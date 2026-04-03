@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { NotFoundPage } from '../../page-objects/not-found.page';
 
-test.describe('Not found page visual', () => {
+test.describe('Not found page visual @visual', () => {
   test.beforeEach(async ({ page }) => {
     const notFoundPage = new NotFoundPage(page);
     await notFoundPage.setTheme('light');

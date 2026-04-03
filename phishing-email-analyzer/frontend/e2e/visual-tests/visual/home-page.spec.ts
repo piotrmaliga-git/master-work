@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { AnalyzerPage } from '../../page-objects/analyzer.page';
 
-test.describe('Home page visual', () => {
+test.describe('Home page visual @visual', () => {
   test.beforeEach(async ({ page }) => {
     const analyzerPage = new AnalyzerPage(page);
     await analyzerPage.setTheme('light');

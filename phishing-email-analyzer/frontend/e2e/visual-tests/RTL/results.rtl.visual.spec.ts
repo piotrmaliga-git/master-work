@@ -22,7 +22,7 @@ const enforceRtlDirection = async (page: Page) => {
   });
 };
 
-test.describe('Results RTL visual', () => {
+test.describe('Results RTL visual @visual', () => {
   test.beforeEach(async ({ page }) => {
     await setRtlDirection(page);
   });

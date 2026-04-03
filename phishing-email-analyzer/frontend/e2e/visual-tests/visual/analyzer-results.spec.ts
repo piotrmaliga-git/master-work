@@ -8,7 +8,7 @@ const STUB_BASE = {
   response_time_ms: 321,
 };
 
-test.describe('Analyzer results visual', () => {
+test.describe('Analyzer results visual @visual', () => {
   test.beforeEach(async ({ page }) => {
     const analyzerPage = new AnalyzerPage(page);
     await analyzerPage.setTheme('light');

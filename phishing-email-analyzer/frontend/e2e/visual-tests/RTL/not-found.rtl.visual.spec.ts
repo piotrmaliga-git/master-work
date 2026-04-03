@@ -13,7 +13,7 @@ const enforceRtlDirection = async (page: Page) => {
   });
 };
 
-test.describe('NotFound RTL visual', () => {
+test.describe('NotFound RTL visual @visual', () => {
   test.beforeEach(async ({ page }) => {
     await setRtlDirection(page);
   });
