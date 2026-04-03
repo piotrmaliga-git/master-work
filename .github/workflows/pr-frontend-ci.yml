@@ -150,35 +150,10 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
-  mutation-tests:
-    name: Mutation tests
-    runs-on: ubuntu-latest
-    needs: check-translations
-    defaults:
-      run:
-        working-directory: phishing-email-analyzer/frontend
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: phishing-email-analyzer/frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Mutation tests
-        run: npm run mutate
-
   e2e-tests:
     name: E2E tests
     runs-on: ubuntu-latest
-    needs: [unit-tests, mutation-tests]
+    needs: unit-tests
     defaults:
       run:
         working-directory: phishing-email-analyzer/frontend
@@ -206,7 +181,7 @@ jobs:
   e2e-visual-tests:
     name: E2E visual tests
     runs-on: ubuntu-latest
-    needs: [unit-tests, mutation-tests, e2e-visual-tests-rtl]
+    needs: e2e-tests
     defaults:
       run:
         working-directory: phishing-email-analyzer/frontend
@@ -234,7 +209,7 @@ jobs:
   e2e-visual-tests-rtl:
     name: E2E visual tests RTL
     runs-on: ubuntu-latest
-    needs: [unit-tests, mutation-tests]
+    needs: e2e-tests
     defaults:
       run:
         working-directory: phishing-email-analyzer/frontend
@@ -258,3 +233,28 @@ jobs:
 
       - name: E2E visual tests RTL
         run: npm run e2e:visual-rtl
+
+  mutation-tests:
+    name: Mutation tests
+    runs-on: ubuntu-latest
+    needs: [e2e-visual-tests, e2e-visual-tests-rtl]
+    defaults:
+      run:
+        working-directory: phishing-email-analyzer/frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: phishing-email-analyzer/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Mutation tests
+        run: npm run mutate
