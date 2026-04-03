@@ -249,6 +249,28 @@ npm run e2e:headed
 npm run e2e:report
 ```
 
+### E2E visual snapshots (Playwright)
+
+Testy wizualne korzystają z dwóch konfiguracji:
+
+- domyślna konfiguracja (`playwright.config.ts`) zapisuje snapshoty do `phishing-email-analyzer/frontend/e2e-snapshots/visual/`,
+- konfiguracja RTL (`playwright.rtl.config.ts`) zapisuje snapshoty do `phishing-email-analyzer/frontend/e2e-snapshots/RTL/`.
+
+Generowanie / aktualizacja snapshotów (PNG):
+
+```powershell
+cd "phishing-email-analyzer/frontend"
+npm run e2e:update-snapshots
+npm run e2e:update-snapshots-rtl
+```
+
+Uruchamianie testów porównujących UI z istniejącymi snapshotami:
+
+```powershell
+npm run e2e:visual
+npm run e2e:visual-rtl
+```
+
 ## Backend: skrypty pomocnicze
 
 ### Porównanie modeli
