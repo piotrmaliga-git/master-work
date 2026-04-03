@@ -3,7 +3,9 @@
   <file id="ngi18n" original="ng.template">
     <unit id="analyzer.modelSelectLabel">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:4,6</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:8,12</note>
+        <note category="description">Model selector field label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Select AI Model</source>
@@ -11,7 +13,9 @@
     </unit>
     <unit id="analyzer.senderLabel">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:19,21</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:26,30</note>
+        <note category="description">Sender input field label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Sender Email</source>
@@ -19,7 +23,9 @@
     </unit>
     <unit id="analyzer.senderPlaceholder">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:28,32</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:36,42</note>
+        <note category="description">Sender input placeholder</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>e.g. attacker@example.com</source>
@@ -27,7 +33,9 @@
     </unit>
     <unit id="analyzer.emailTitleLabel">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:33,35</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:44,48</note>
+        <note category="description">Email subject input field label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Email Title/Subject</source>
@@ -35,7 +43,9 @@
     </unit>
     <unit id="analyzer.emailTitlePlaceholder">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:42,46</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:54,59</note>
+        <note category="description">Email subject input placeholder</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>e.g. Urgent: Verify Your Account</source>
@@ -43,7 +53,9 @@
     </unit>
     <unit id="analyzer.emailContentLabel">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:47,49</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:60,64</note>
+        <note category="description">Email body textarea label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Email content</source>
@@ -51,7 +63,9 @@
     </unit>
     <unit id="analyzer.emailContentAria">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:53,55</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:67,70</note>
+        <note category="description">ARIA label for email textarea</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Email content</source>
@@ -59,7 +73,9 @@
     </unit>
     <unit id="analyzer.emailContentPlaceholder">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:57,60</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:72,76</note>
+        <note category="description">Email body textarea placeholder</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Paste email content here...</source>
@@ -67,7 +83,9 @@
     </unit>
     <unit id="analyzer.characters">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:61,64</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:78,83</note>
+        <note category="description">Character counter unit label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>characters</source>
@@ -75,7 +93,9 @@
     </unit>
     <unit id="analyzer.analyzeButton">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:72,73</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:90,92</note>
+        <note category="description">Analyze action button label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Analyze</source>
@@ -83,31 +103,29 @@
     </unit>
     <unit id="analyzer.clearButton">
       <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.html:83,84</note>
+        <note category="location">src/app/components/analyzer/analyzer.component.html:101,103</note>
+        <note category="description">Clear form action button label</note>
+        <note category="meaning">analyzer</note>
       </notes>
       <segment>
         <source>Clear</source>
       </segment>
     </unit>
-    <unit id="analyzer.errorEmptyEmail">
-      <notes>
-        <note category="location">src/app/components/analyzer/analyzer.component.ts:50</note>
-      </notes>
-      <segment>
-        <source>Please enter email text</source>
-      </segment>
-    </unit>
     <unit id="footer.copyright">
       <notes>
-        <note category="location">src/app/components/footer/footer.component.html:3,6</note>
+        <note category="location">src/app/components/footer/footer.component.html:7,11</note>
+        <note category="description">Copyright notice in page footer</note>
+        <note category="meaning">footer</note>
       </notes>
       <segment>
-        <source>© 2026 Phishing Email Analyzer. All rights reserved.</source>
+        <source> © 2026 Phishing Email Analyzer. All rights reserved. </source>
       </segment>
     </unit>
     <unit id="header.logoAlt">
       <notes>
-        <note category="location">src/app/components/header/header.component.html:19,20</note>
+        <note category="location">src/app/components/header/header.component.html:33,35</note>
+        <note category="description">Alt text for header logo icon</note>
+        <note category="meaning">header</note>
       </notes>
       <segment>
         <source>Search icon</source>
@@ -115,7 +133,9 @@
     </unit>
     <unit id="header.title">
       <notes>
-        <note category="location">src/app/components/header/header.component.html:20,22</note>
+        <note category="location">src/app/components/header/header.component.html:36,39</note>
+        <note category="description">Application title in page header</note>
+        <note category="meaning">header</note>
       </notes>
       <segment>
         <source>Phishing Email Analyzer</source>
@@ -123,79 +143,29 @@
     </unit>
     <unit id="header.subtitle">
       <notes>
-        <note category="location">src/app/components/header/header.component.html:23,26</note>
+        <note category="location">src/app/components/header/header.component.html:40,45</note>
+        <note category="description">Header subtitle describing app purpose</note>
+        <note category="meaning">header</note>
       </notes>
       <segment>
         <source> Paste an email below and select an AI model to analyze phishing risk </source>
       </segment>
     </unit>
-    <unit id="header.switchToLight">
-      <notes>
-        <note category="location">src/app/components/header/header.component.ts:15</note>
-      </notes>
-      <segment>
-        <source>Switch to light mode</source>
-      </segment>
-    </unit>
-    <unit id="header.switchToDark">
-      <notes>
-        <note category="location">src/app/components/header/header.component.ts:16</note>
-      </notes>
-      <segment>
-        <source>Switch to dark mode</source>
-      </segment>
-    </unit>
     <unit id="info.cardHeader">
       <notes>
-        <note category="location">src/app/components/info/info.component.html:1,2</note>
+        <note category="location">src/app/components/info/info.component.html:4,8</note>
+        <note category="description">Card title for available models section</note>
+        <note category="meaning">info</note>
       </notes>
       <segment>
         <source>Available Models</source>
       </segment>
     </unit>
-    <unit id="info.models.gpt41">
-      <notes>
-        <note category="location">src/app/components/info/info.component.ts:16</note>
-      </notes>
-      <segment>
-        <source>Latest OpenAI model with improved reasoning</source>
-      </segment>
-    </unit>
-    <unit id="info.models.gemini25Pro">
-      <notes>
-        <note category="location">src/app/components/info/info.component.ts:20</note>
-      </notes>
-      <segment>
-        <source>Google&apos;s latest LLM with advanced understanding</source>
-      </segment>
-    </unit>
-    <unit id="info.models.mistral7B">
-      <notes>
-        <note category="location">src/app/components/info/info.component.ts:24</note>
-      </notes>
-      <segment>
-        <source>Open-source model from Mistral AI with 7 billion parameters</source>
-      </segment>
-    </unit>
-    <unit id="info.models.llamaCloud">
-      <notes>
-        <note category="location">src/app/components/info/info.component.ts:28</note>
-      </notes>
-      <segment>
-        <source>Meta&apos;s LLM accessed via cloud API</source>
-      </segment>
-    </unit>
-    <unit id="info.models.bielik24bit">
-      <notes>
-        <note category="location">src/app/components/info/info.component.ts:32</note>
-      </notes>
-      <segment>
-        <source>Polish language model running locally in 4-bit quantization mode</source>
-      </segment>
-    </unit>
     <unit id="results.cardHeader">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:3,4</note>
+        <note category="location">src/app/components/results/results.component.html:8,11</note>
+        <note category="description">Results card title</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Analysis Result</source>
@@ -203,7 +173,9 @@
     </unit>
     <unit id="results.model">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:5,6</note>
+        <note category="location">src/app/components/results/results.component.html:12,14</note>
+        <note category="description">Label for analyzed model</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Model</source>
@@ -211,7 +183,9 @@
     </unit>
     <unit id="results.sender">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:9,10</note>
+        <note category="location">src/app/components/results/results.component.html:16,18</note>
+        <note category="description">Label for sender address</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Sender</source>
@@ -219,7 +193,9 @@
     </unit>
     <unit id="results.title">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:13,14</note>
+        <note category="location">src/app/components/results/results.component.html:20,22</note>
+        <note category="description">Label for email subject</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Title</source>
@@ -227,7 +203,9 @@
     </unit>
     <unit id="results.prediction">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:17,19</note>
+        <note category="location">src/app/components/results/results.component.html:24,27</note>
+        <note category="description">Label for classification result</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Prediction</source>
@@ -235,7 +213,9 @@
     </unit>
     <unit id="results.detailedAnalysis">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:25,26</note>
+        <note category="location">src/app/components/results/results.component.html:34,36</note>
+        <note category="description">Section title for detailed reasoning</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Detailed Analysis</source>
@@ -243,7 +223,9 @@
     </unit>
     <unit id="results.responseTime">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:30,31</note>
+        <note category="location">src/app/components/results/results.component.html:40,41</note>
+        <note category="description">Label for API response time</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Response Time</source>
@@ -251,7 +233,9 @@
     </unit>
     <unit id="results.timestamp">
       <notes>
-        <note category="location">src/app/components/results/results.component.html:34,35</note>
+        <note category="location">src/app/components/results/results.component.html:44,45</note>
+        <note category="description">Label for result timestamp</note>
+        <note category="meaning">results</note>
       </notes>
       <segment>
         <source>Timestamp</source>
@@ -259,23 +243,129 @@
     </unit>
     <unit id="notFound.message">
       <notes>
-        <note category="location">src/app/pages/not-found/not-found.component.ts:11,12</note>
+        <note category="location">src/app/pages/not-found/not-found.component.ts:15,19</note>
+        <note category="description">Message shown on 404 page</note>
+        <note category="meaning">notFound</note>
       </notes>
       <segment>
-        <source>Page not found.</source>
+        <source> Page not found. </source>
       </segment>
     </unit>
     <unit id="notFound.goHome">
       <notes>
-        <note category="location">src/app/pages/not-found/not-found.component.ts:13,17</note>
+        <note category="location">src/app/pages/not-found/not-found.component.ts:23,28</note>
+        <note category="description">CTA link text to return home</note>
+        <note category="meaning">notFound</note>
       </notes>
       <segment>
         <source>Go back to home</source>
       </segment>
     </unit>
+    <unit id="header.switchToLight">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:2</note>
+        <note category="description">Tooltip and aria label for light mode toggle</note>
+        <note category="meaning">header</note>
+      </notes>
+      <segment>
+        <source>Switch to light mode</source>
+      </segment>
+    </unit>
+    <unit id="header.switchToDark">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:3</note>
+        <note category="description">Tooltip and aria label for dark mode toggle</note>
+        <note category="meaning">header</note>
+      </notes>
+      <segment>
+        <source>Switch to dark mode</source>
+      </segment>
+    </unit>
+    <unit id="header.switchToEnglish">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:4</note>
+        <note category="description">Tooltip and aria label for English language switch</note>
+        <note category="meaning">header</note>
+      </notes>
+      <segment>
+        <source>Switch to English</source>
+      </segment>
+    </unit>
+    <unit id="header.switchToPolish">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:5</note>
+        <note category="description">Tooltip and aria label for Polish language switch</note>
+        <note category="meaning">header</note>
+      </notes>
+      <segment>
+        <source>Switch to Polish</source>
+      </segment>
+    </unit>
+    <unit id="analyzer.errorEmptyEmail">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:9</note>
+        <note category="description">Validation message when email body is empty</note>
+        <note category="meaning">analyzer</note>
+      </notes>
+      <segment>
+        <source>Please enter email text</source>
+      </segment>
+    </unit>
+    <unit id="info.models.gpt41">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:13</note>
+        <note category="description">Description of GPT-4.1 model in info card</note>
+        <note category="meaning">info</note>
+      </notes>
+      <segment>
+        <source>Latest OpenAI model with improved reasoning</source>
+      </segment>
+    </unit>
+    <unit id="info.models.gemini25Pro">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:14</note>
+        <note category="description">Description of Gemini 2.5 Pro model in info card</note>
+        <note category="meaning">info</note>
+      </notes>
+      <segment>
+        <source>Google&apos;s latest LLM with advanced understanding</source>
+      </segment>
+    </unit>
+    <unit id="info.models.mistral7B">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:15</note>
+        <note category="description">Description of Mistral 7B model in info card</note>
+        <note category="meaning">info</note>
+      </notes>
+      <segment>
+        <source>Open-source model from Mistral AI with 7 billion parameters</source>
+      </segment>
+    </unit>
+    <unit id="info.models.llamaCloud">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:16</note>
+        <note category="description">Description of Llama Cloud model in info card</note>
+        <note category="meaning">info</note>
+      </notes>
+      <segment>
+        <source>Meta&apos;s LLM accessed via cloud API</source>
+      </segment>
+    </unit>
+    <unit id="info.models.bielik24bit">
+      <notes>
+        <note category="location">src/app/utils/translations/translations.ts:17</note>
+        <note category="description">Description of Bielik 2 (4-bit) model in info card</note>
+        <note category="meaning">info</note>
+      </notes>
+      <segment>
+        <source>Polish language model running locally in 4-bit quantization mode</source>
+      </segment>
+    </unit>
     <unit id="pipes.noReason">
       <notes>
-        <note category="location">src/app/pipes/format-reason.pipe.ts:13</note>
+        <note category="location">src/app/utils/translations/translations.ts:21</note>
+        <note category="description">Fallback reason when model explanation is empty</note>
+        <note category="meaning">pipes</note>
       </notes>
       <segment>
         <source>No additional justification.</source>
