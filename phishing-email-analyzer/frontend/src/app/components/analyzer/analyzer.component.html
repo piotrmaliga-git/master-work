@@ -1,13 +1,15 @@
 <p-card styleClass="mb-8 analyzer-card">
   <div class="analyzer-form">
     <div class="field">
-      <label
-        for="model-select"
+      <span
+        id="model-select-label"
+        class="field-label"
         i18n="analyzer|Model selector field label@@analyzer.modelSelectLabel"
-        >Select AI Model</label
+        >Select AI Model</span
       >
       <p-select
         inputId="model-select"
+        ariaLabelledBy="model-select-label"
         data-testid="model-select"
         [options]="models"
         optionLabel="name"

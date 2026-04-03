@@ -7,7 +7,7 @@ import { AnalyzerComponent } from '../../components/analyzer/analyzer.component'
 import { ResultsComponent } from '../../components/results/results.component';
 import { InfoComponent } from '../../components/info/info.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { AiModelId } from '../../utils/constants/constans';
+import { AiModelId } from '../../utils/constants/constants';
 import type { AnalysisResult } from '../../utils/interfaces/interfaces';
 
 const comments = [

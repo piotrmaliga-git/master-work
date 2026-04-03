@@ -3,7 +3,7 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgModel } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { AnalyzerComponent } from './analyzer.component';
-import { AiModelId } from '../../utils/constants/constans';
+import { AiModelId } from '../../utils/constants/constants';
 
 describe('AnalyzerComponent', () => {
   let fixture: ComponentFixture<AnalyzerComponent>;
@@ -12,6 +12,11 @@ describe('AnalyzerComponent', () => {
   const util = {
     select(): DebugElement {
       return fixture.debugElement.query(By.css('[data-testid="model-select"]'));
+    },
+    selectTrigger(): HTMLElement | null {
+      return fixture.nativeElement.querySelector(
+        '[data-testid="model-select"] [data-pc-section="label"]'
+      ) as HTMLElement | null;
     },
     selectElement(): DebugElement {
       return util.select();
@@ -171,6 +176,22 @@ describe('AnalyzerComponent', () => {
   it('should pass configured options to model selector', () => {
     expect(util.select()).toBeTruthy();
     expect(component.selectedModel()).toBe(AiModelId.GPT_4_1);
+  });
+
+  it('should expose an accessible label for the model selector without using a native orphaned label', () => {
+    const selectComponent = util.select().componentInstance as { ariaLabelledBy?: string };
+    const labelElement = fixture.nativeElement.querySelector(
+      '#model-select-label'
+    ) as HTMLElement | null;
+    const selectTrigger = util.selectTrigger();
+    const orphanedLabel = fixture.nativeElement.querySelector('label[for="model-select"]');
+
+    expect(labelElement?.tagName).toBe('SPAN');
+    expect(labelElement?.textContent).toContain('Select AI Model');
+    expect(selectComponent.ariaLabelledBy).toBe('model-select-label');
+    expect(selectTrigger?.getAttribute('role')).toBe('button');
+    expect(selectTrigger?.getAttribute('aria-controls')).toBeNull();
+    expect(orphanedLabel).toBeNull();
   });
 
   it('should update text fields via DOM events', async () => {

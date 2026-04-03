@@ -1,7 +1,7 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Theme } from '../utils/enums/enums';
-import { STORAGE_KEY } from '../utils/constants/constans';
+import { STORAGE_KEY } from '../utils/constants/constants';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

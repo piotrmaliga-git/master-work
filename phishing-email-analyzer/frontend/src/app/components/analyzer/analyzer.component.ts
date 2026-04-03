@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -7,7 +7,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
-import { AI_MODEL_OPTIONS, AiModelId } from '../../utils/constants/constans';
+import { AI_MODEL_OPTIONS, AiModelId } from '../../utils/constants/constants';
 import { analyzerTranslations } from '../../utils/translations/translations';
 
 @Component({

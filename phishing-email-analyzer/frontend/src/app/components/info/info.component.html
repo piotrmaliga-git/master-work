@@ -7,8 +7,8 @@
   <ul class="model-list">
     @for (model of models(); track model.name) {
       <li>
-        <strong>{{ model.name }}:</strong>
-        <span>{{ model.description }}</span>
+        <strong class="model-name">{{ model.name }}: </strong>
+        <span class="model-description">{{ model.description }}</span>
       </li>
     }
   </ul>
