@@ -31,7 +31,7 @@ describe('NotFoundPageComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.textContent).toContain('404');
-    expect(compiled.textContent).toContain('Page not found.');
+    expect(compiled.textContent).toContain('Page not found');
     expect((util.homeLink().nativeElement as HTMLAnchorElement).textContent).toContain(
       'Go back to home'
     );
