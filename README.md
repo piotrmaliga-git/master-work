@@ -1,4 +1,5 @@
-# Phishing Email Analyzer Repository
+# Master's work
+# Topic: Comparative analysis of the effectiveness of language models in detecting phishing messages
 
 This repository combines two closely related parts of a master's thesis project:
 
@@ -67,6 +68,42 @@ Supported model integrations currently present in the codebase:
 - `data/data.json`: labeled dataset used for experiments and quick model comparisons
 - `reports/`: saved JSON reports from model evaluation runs
 - `graduate work/`: thesis text, bibliography, title/claims pages, and graphics
+
+## Screenshots
+
+Below are example views of the application interface in the standard left-to-right layout.
+
+### Home Page
+
+#### Empty form
+
+![Home page empty form](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-empty.png)
+
+#### Filled form
+
+![Home page filled form](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-form-filled.png)
+
+#### Loading state
+
+![Home page loading state](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-loading.png)
+
+### Analysis Results
+
+#### Legit result
+
+![Legit classification result](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-safe.png)
+
+#### Phishing result
+
+![Phishing classification result](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-phishing.png)
+
+#### Error state
+
+![Analysis error state](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-error.png)
+
+### Not Found Page
+
+![Not found page](phishing-email-analyzer/frontend/e2e-snapshots/visual/not-found/light/not-found.png)
 
 ## Requirements
 
@@ -277,24 +314,55 @@ The project can be used both as a local phishing-email analysis tool and as an e
 ## Table of Contents
 
 - [Master's work](#masters-work)
+- [Topic: Comparative analysis of the effectiveness of language models in detecting phishing messages](#topic-comparative-analysis-of-the-effectiveness-of-language-models-in-detecting-phishing-messages)
+  - [Repository Structure](#repository-structure)
+  - [Main Application](#main-application)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+  - [Supporting Folders](#supporting-folders)
+  - [Screenshots](#screenshots)
+    - [Home Page](#home-page)
+      - [Empty form](#empty-form)
+      - [Filled form](#filled-form)
+      - [Loading state](#loading-state)
+    - [Analysis Results](#analysis-results)
+      - [Legit result](#legit-result)
+      - [Phishing result](#phishing-result)
+      - [Error state](#error-state)
+    - [Not Found Page](#not-found-page)
+  - [Requirements](#requirements)
+  - [Quick Start](#quick-start)
+    - [1. Frontend setup](#1-frontend-setup)
+    - [2. Backend setup](#2-backend-setup)
+  - [Environment Variables](#environment-variables)
+  - [API Contract](#api-contract)
+    - [`GET /`](#get-)
+    - [`POST /analyze`](#post-analyze)
+  - [Development Commands](#development-commands)
+    - [Frontend](#frontend-1)
+    - [Backend](#backend-1)
+  - [Testing and Quality](#testing-and-quality)
+  - [Dataset and Evaluation](#dataset-and-evaluation)
+  - [Notes and Limitations](#notes-and-limitations)
+  - [Thesis Context](#thesis-context)
   - [Comparative Analysis of Language Model Effectiveness in Detecting Phishing Emails](#comparative-analysis-of-language-model-effectiveness-in-detecting-phishing-emails)
   - [Table of Contents](#table-of-contents)
   - [Repository Overview](#repository-overview)
   - [Project Structure](#project-structure)
-  - [Screenshots](#screenshots)
+  - [Screenshots](#screenshots-1)
     - [Home Page - Analysis Form](#home-page---analysis-form)
-    - [Analysis Results](#analysis-results)
+    - [Analysis Results](#analysis-results-1)
     - [404 Page](#404-page)
     - [RTL Tests](#rtl-tests)
-  - [Requirements](#requirements)
-  - [Quick Start](#quick-start)
+  - [Requirements](#requirements-1)
+  - [Quick Start](#quick-start-1)
     - [1. Backend](#1-backend)
     - [2. Frontend](#2-frontend)
   - [Backend Configuration](#backend-configuration)
   - [Architecture](#architecture)
   - [API](#api)
-    - [`GET /`](#get-)
-    - [`POST /analyze`](#post-analyze)
+    - [`GET /`](#get--1)
+    - [`POST /analyze`](#post-analyze-1)
   - [Models](#models)
   - [Frontend: Run and Quality](#frontend-run-and-quality)
     - [Run and Build](#run-and-build)
