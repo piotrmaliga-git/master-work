@@ -11,20 +11,41 @@ Projekt pozwala zarówno uruchomić lokalnie aplikację do analizy pojedynczych 
 
 ## Spis treści
 
-- [Opis repozytorium](#opis-repozytorium)
-- [Struktura projektu](#struktura-projektu)
-- [Wymagania](#wymagania)
-- [Szybki start](#szybki-start)
-- [Konfiguracja backendu](#konfiguracja-backendu)
-- [Architektura](#architektura)
-- [API](#api)
-- [Modele](#modele)
-- [Frontend: uruchamianie i jakość](#frontend-uruchamianie-i-jakość)
-- [Backend: skrypty pomocnicze](#backend-skrypty-pomocnicze)
-- [CI i hooki Git](#ci-i-hooki-git)
-- [Dane i raporty](#dane-i-raporty)
-- [Część pracy magisterskiej](#część-pracy-magisterskiej)
-- [Aktualne ograniczenia](#aktualne-ograniczenia)
+- [Phishing Email Analyzer + praca magisterska](#phishing-email-analyzer--praca-magisterska)
+  - [Spis treści](#spis-treści)
+  - [Opis repozytorium](#opis-repozytorium)
+  - [Struktura projektu](#struktura-projektu)
+  - [Zrzuty ekranu](#zrzuty-ekranu)
+    - [Strona główna – formularz analizy](#strona-główna--formularz-analizy)
+    - [Wyniki analizy](#wyniki-analizy)
+    - [Strona 404](#strona-404)
+    - [Testy RTL (right-to-left)](#testy-rtl-right-to-left)
+  - [Wymagania](#wymagania)
+  - [Szybki start](#szybki-start)
+    - [1. Backend](#1-backend)
+    - [2. Frontend](#2-frontend)
+  - [Konfiguracja backendu](#konfiguracja-backendu)
+  - [Architektura](#architektura)
+  - [API](#api)
+    - [`GET /`](#get-)
+    - [`POST /analyze`](#post-analyze)
+  - [Modele](#modele)
+  - [Frontend: uruchamianie i jakość](#frontend-uruchamianie-i-jakość)
+    - [Uruchamianie i build](#uruchamianie-i-build)
+    - [Tłumaczenia](#tłumaczenia)
+    - [Testy](#testy)
+    - [Jakość kodu](#jakość-kodu)
+    - [E2E Playwright](#e2e-playwright)
+    - [E2E visual snapshots (Playwright)](#e2e-visual-snapshots-playwright)
+  - [Backend: skrypty pomocnicze](#backend-skrypty-pomocnicze)
+    - [Porównanie modeli](#porównanie-modeli)
+    - [Mieszanie i porządkowanie danych](#mieszanie-i-porządkowanie-danych)
+  - [CI i hooki Git](#ci-i-hooki-git)
+  - [Dane i raporty](#dane-i-raporty)
+    - [Format danych wejściowych](#format-danych-wejściowych)
+    - [Raporty](#raporty)
+  - [Część pracy magisterskiej](#część-pracy-magisterskiej)
+  - [Aktualne ograniczenia](#aktualne-ograniczenia)
 
 ## Opis repozytorium
 
@@ -64,6 +85,38 @@ Najważniejszym elementem projektu jest aplikacja Phishing Email Analyzer:
 |-- reports/                          # raporty JSON z uruchomień modeli
 `-- README.md
 ```
+
+## Zrzuty ekranu
+
+Poniższe zrzuty ekranu pochodzą z testów wizualnych Playwright (snapshoty przechowywane w `phishing-email-analyzer/frontend/e2e-snapshots/`).
+
+### Strona główna – formularz analizy
+
+| Tryb jasny | Tryb ciemny |
+|---|---|
+| ![Pusta strona główna – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-empty.png) | ![Pusta strona główna – tryb ciemny](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/dark/home-empty.png) |
+| ![Wypełniony formularz – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-form-filled.png) | |
+| ![Stan ładowania – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/home-page/light/home-loading.png) | |
+
+### Wyniki analizy
+
+| Tryb jasny | Tryb ciemny |
+|---|---|
+| ![Wynik: phishing – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-phishing.png) | ![Wynik: phishing – tryb ciemny](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/dark/result-phishing.png) |
+| ![Wynik: legit – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-safe.png) | |
+| ![Wynik: błąd – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/analyzer-results/light/result-error.png) | |
+
+### Strona 404
+
+| Tryb jasny |
+|---|
+| ![Strona 404 – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/visual/not-found/light/not-found.png) |
+
+### Testy RTL (right-to-left)
+
+| Formularz analizy – tryb jasny | Wyniki – tryb jasny | Strona 404 – tryb jasny |
+|---|---|---|
+| ![Formularz RTL – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/RTL/analyzer/light/analyzer-empty-state.png) | ![Wyniki RTL – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/RTL/results/light/result-phishing.png) | ![404 RTL – tryb jasny](phishing-email-analyzer/frontend/e2e-snapshots/RTL/not-found/light/not-found.png) |
 
 ## Wymagania
 
