@@ -12,7 +12,7 @@ import { ButtonModule } from 'primeng/button';
       class="text-lg mb-8 text-[var(--p-text-muted-color)]"
       i18n="notFound|Message shown on 404 page@@notFound.message"
     >
-      Page not found.
+      Page not found
     </p>
     <a
       data-testid="not-found-home-link"
