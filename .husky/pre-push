@@ -4,6 +4,6 @@ set -e
 
 echo "Running pre-push checks for frontend..."
 
-npm --prefix phishing-email-analyzer/frontend run build:i18n
+npm --prefix phishing-email-analyzer/frontend run build:prod
 npm --prefix phishing-email-analyzer/frontend run format:check
 npm --prefix phishing-email-analyzer/frontend run lint
