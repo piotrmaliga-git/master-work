@@ -8,21 +8,28 @@ import express from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
+const LOCALE_COOKIE_NAME = 'app-locale';
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+app.use(express.json());
+
+app.post('/api/locale', (req, res) => {
+  const locale = req.body?.locale;
+
+  if (locale !== 'en' && locale !== 'pl') {
+    res.status(400).json({ error: 'Unsupported locale. Use "en" or "pl".' });
+    return;
+  }
+
+  res.cookie(LOCALE_COOKIE_NAME, locale, {
+    path: '/',
+    sameSite: 'lax',
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+  });
+  res.status(204).send();
+});
 
 /**
  * Serve static files from /browser
