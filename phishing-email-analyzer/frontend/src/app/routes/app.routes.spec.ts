@@ -27,24 +27,4 @@ describe('App Router', () => {
     const loadedComponent = await wildcardRoute!.loadComponent!();
     expect(loadedComponent).toBe(NotFoundPageComponent);
   });
-
-  it('should define pl route with lazy loaded HomePageComponent', async () => {
-    const plRoute = routes.find((route) => route.path === 'pl');
-
-    expect(plRoute).toBeTruthy();
-    expect(plRoute?.loadComponent).toBeDefined();
-
-    const loadedComponent = await plRoute!.loadComponent!();
-    expect(loadedComponent).toBe(HomePageComponent);
-  });
-
-  it('should define en route with lazy loaded HomePageComponent', async () => {
-    const enRoute = routes.find((route) => route.path === 'en');
-
-    expect(enRoute).toBeTruthy();
-    expect(enRoute?.loadComponent).toBeDefined();
-
-    const loadedComponent = await enRoute!.loadComponent!();
-    expect(loadedComponent).toBe(HomePageComponent);
-  });
 });

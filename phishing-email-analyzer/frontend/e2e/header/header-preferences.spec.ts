@@ -16,13 +16,13 @@ test.describe('Header preferences e2e', () => {
       });
     });
 
-    await headerPage.goto('/pl?source=e2e#section');
+    await headerPage.goto('/');
 
-    await headerPage.expectLanguageToggleText('EN');
+    await headerPage.expectLanguageToggleText('PL');
 
     await headerPage.clickLanguageToggle();
 
-    await expect.poll(() => localePayload).toEqual({ locale: 'en' });
+    await expect.poll(() => localePayload).toEqual({ locale: 'pl' });
   });
 
   test('theme toggle updates document class and persisted preference', async ({ page }) => {
