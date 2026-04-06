@@ -60,7 +60,7 @@ export class HeaderComponent {
     if (nextLocale === 'pl') {
       nextPath = currentPath === '/' ? '/pl' : `/pl${currentPath}`;
     } else if (hadLocalePrefix) {
-      nextPath = currentPath === '/' ? '/en' : `/en${currentPath}`;
+      nextPath = currentPath;
     } else {
       nextPath = currentPath;
     }

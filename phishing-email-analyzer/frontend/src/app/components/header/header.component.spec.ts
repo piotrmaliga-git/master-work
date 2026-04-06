@@ -206,10 +206,10 @@ describe('HeaderComponent behavior', () => {
     await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('en');
-    expect(assign).toHaveBeenCalledWith('/en/offers?page=1#section');
+    expect(assign).toHaveBeenCalledWith('/offers?page=1#section');
   });
 
-  it('should redirect /pl root path to /en when switching from polish', async () => {
+  it('should redirect /pl root path to / when switching from polish', async () => {
     const { fixture, assign, localeServiceMock } = await createFixture({
       pathname: '/pl',
       search: '?tab=home',
@@ -222,7 +222,7 @@ describe('HeaderComponent behavior', () => {
     await fixture.whenStable();
 
     expect(localeServiceMock.setPreferredLocale).toHaveBeenCalledWith('en');
-    expect(assign).toHaveBeenCalledWith('/en?tab=home#hero');
+    expect(assign).toHaveBeenCalledWith('/?tab=home#hero');
   });
 
   it('should not redirect on server platform', async () => {
